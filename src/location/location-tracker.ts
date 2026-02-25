@@ -67,6 +67,8 @@ export class LocationTracker {
         if (this.locationMarker) {
             this.locationMarker.redraw();
         }
+        // this could be very expensive
+        this.pathLine.redraw();
     };
 
     private handlePosition = (position: GeolocationPosition) => {
