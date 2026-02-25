@@ -21,6 +21,9 @@ export const initMap = (config: MapConfiguartion) => {
             bearing: 180, // start upside down
             touchRotate: true,
             rotateControl: undefined,
+            zoomAnimation: true,
+            markerZoomAnimation: false,
+            preferCanvas: true,
         } as unknown as MapOptions /* these come from the extension */,
     )
         .setView(config.initialLocation, config.initialZoom)
@@ -51,8 +54,6 @@ export const initMap = (config: MapConfiguartion) => {
     const locationTracker = new LocationTracker();
 
     map.addLayer(locationTracker.layer);
-    // TODO: this is expensive, ensure it's needed
-    map.on("zoomanim", locationTracker.zoomAnimaitonCallback);
 
     // Safari (macOS/iOS) can change viewport when the location permission dialog
     // appears or closes, so Leaflet’s cached size becomes wrong. Recompute it.
