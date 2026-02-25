@@ -20,8 +20,11 @@ export class LocationTracker {
 
         // Initalize map elements
         // TODO: map elements in this class feels like tight coupling
-        // TODO: read from local storage
-        this.pathLine = L.polyline([], {
+        const storedPoints = locationStoreInstance
+            .getAll()
+            .map(({ latitude, longitude }) => L.latLng(latitude, longitude));
+
+        this.pathLine = L.polyline(storedPoints, {
             color: "blue",
             weight: 4,
             smoothFactor: 1.5,

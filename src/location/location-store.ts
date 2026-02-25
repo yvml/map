@@ -1,3 +1,4 @@
+import { LocalStorageProvider, StorageKeys } from "../storage";
 import { debug } from "../utils";
 import L from "leaflet";
 
@@ -9,7 +10,14 @@ type LocationPoint = {
 };
 
 class LocationStore {
-    maybeAdd(point: LocationPoint) {
+    constructor() {
+        this.data = LocationStore.readFromStorage() ?? [];
+        this.previousDataLength = this.data.length;
+    }
+    /**
+     * Only add if the distance between two points is great enough
+     */
+    maybeAdd = (point: LocationPoint) => {
         const previousPoint = this.data[this.data.length - 1];
 
         if (previousPoint) {
@@ -38,14 +46,44 @@ class LocationStore {
         debug(
             `[LocationStore]: ${point} added; total size: ${this.data.length}`,
         );
-    }
+    };
 
-    getAll(): Array<LocationPoint> {
+    getAll = (): Array<LocationPoint> => {
         debug(`[LocationStore]: getAll: ${this.data}`);
         return this.data;
-    }
+    };
 
-    private data: Array<LocationPoint> = []; // TODO: set?
+    saveToStorage = () => {
+        if (this.data.length === this.previousDataLength) {
+            debug(
+                `[LocationStore] saveToStorage: length unchanged, not saving`,
+            );
+            return;
+        }
+
+        this.previousDataLength = this.data.length;
+
+        LocalStorageProvider.set(
+            StorageKeys.locationHistory,
+            JSON.stringify(this.data),
+        );
+    };
+
+    private static readFromStorage = (): Array<LocationPoint> | undefined => {
+        const localData = LocalStorageProvider.get(StorageKeys.locationHistory);
+
+        if (!localData) {
+            debug(`[LocationStore] readFromStorage: nothing in local data`);
+            return undefined;
+        }
+
+        const parsedData = JSON.parse(localData);
+        debug(parsedData);
+        return parsedData;
+    };
+
+    private data: Array<LocationPoint> = [];
+    private previousDataLength: number;
 }
 
 export const locationStoreInstance = new LocationStore();

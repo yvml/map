@@ -7,6 +7,7 @@ import "./styles.css";
 import "leaflet-rotate";
 import "leaflet.offline"; // temp
 import { initSettingsMenu } from "./settings";
+import { locationStoreInstance } from "./location";
 
 initSettingsMenu();
 
@@ -17,3 +18,7 @@ initMap({
     defaultLayer: mapLayers.satellite,
     layers: mapLayers,
 });
+
+setInterval(() => {
+    locationStoreInstance.saveToStorage();
+}, 15000); // every 15 seconds, save location data to storage
