@@ -1,13 +1,7 @@
 import { LocalStorageProvider, StorageKeys } from "../storage";
 import { debug } from "../utils";
 import L from "leaflet";
-
-type LocationPoint = {
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-    timestamp: number;
-};
+import type { LocationPoint } from "./types";
 
 class LocationStore {
     constructor() {

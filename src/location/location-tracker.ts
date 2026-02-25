@@ -1,22 +1,22 @@
 import L from "leaflet";
 import { debug, info } from "../utils";
 import { locationStoreInstance } from "./location-store";
+import type { LocationPoint } from "./types";
+
+type Listener = (point: LocationPoint) => void;
 
 export class LocationTracker {
     /**
      * Initalize position tracker and EventListener
      */
     constructor() {
-        this.watchId = this.startTracking();
-        debug(`[PositionTracker] startTracking began -- ${this.watchId}`);
+        // TODO: move this out
+        this.start();
 
-        document.addEventListener("visibilitychange", () => {
-            if (document.hidden) {
-                this.stopTracking();
-            } else {
-                this.startTracking();
-            }
-        });
+        document.addEventListener(
+            "visibilitychange",
+            this.handleVisibilityChange,
+        );
 
         // Initalize map elements
         // TODO: map elements in this class feels like tight coupling
@@ -35,11 +35,19 @@ export class LocationTracker {
         ]);
     }
 
+    public subscribe(listener: Listener) {
+        this.listeners.add(listener);
+    }
+
     /**
      * start tracking via navigator.geolocation
      */
-    public startTracking = (): number => {
-        return navigator.geolocation.watchPosition(
+    public start = (): void => {
+        if (this.watchId !== undefined) {
+            return;
+        }
+
+        this.watchId = navigator.geolocation.watchPosition(
             this.handlePosition,
             this.handleError,
             {
@@ -48,16 +56,28 @@ export class LocationTracker {
                 maximumAge: 2000, // TODO: see what this does
             },
         );
+
+        debug(`[LocationTracker] watch started: ${this.watchId}`);
+
+        document.addEventListener(
+            "visibilitychange",
+            this.handleVisibilityChange,
+        );
     };
 
     /**
      * end tracking based on the current watchId
      */
-    public stopTracking = (): void => {
+    public stop = (): void => {
         if (this.watchId !== undefined) {
             navigator.geolocation.clearWatch(this.watchId);
             this.watchId = undefined;
         }
+
+        document.removeEventListener(
+            "visibilitychange",
+            this.handleVisibilityChange,
+        );
     };
 
     /**
@@ -74,12 +94,21 @@ export class LocationTracker {
         this.pathLine.redraw();
     };
 
+    private handleVisibilityChange = () => {
+        if (document.hidden) {
+            this.stop();
+        } else {
+            this.start();
+        }
+    };
+
     private handlePosition = (position: GeolocationPosition) => {
         const { latitude, longitude, accuracy } = position.coords;
 
         this.pathLine.addLatLng([latitude, longitude]);
 
         if (!this.locationMarker) {
+            // TODO: move to  location-layer
             debug("adding locationMarker", position.coords);
             this.locationMarker = L.circle([latitude, longitude], {
                 radius: accuracy, // meters
@@ -94,12 +123,18 @@ export class LocationTracker {
             this.locationMarker.setRadius(accuracy);
         }
 
-        locationStoreInstance.maybeAdd({
+        const point = {
             latitude,
             longitude,
             accuracy,
             timestamp: Date.now(),
-        });
+        };
+
+        locationStoreInstance.maybeAdd(point);
+
+        for (const listener of this.listeners) {
+            listener(point);
+        }
     };
 
     private handleError = (error: GeolocationPositionError) => {
@@ -126,4 +161,5 @@ export class LocationTracker {
     private pathLine: L.Polyline;
     private locationMarker: L.Circle | undefined;
     public layer: L.LayerGroup;
+    private listeners = new Set<Listener>();
 }
