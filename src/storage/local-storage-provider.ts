@@ -21,4 +21,14 @@ export const LocalStorageProvider: StorageProvider = {
         }
         return entry;
     },
+
+    clear(key: string | undefined) {
+        if (!key) {
+            debug(`[LocalStorageProvider] clearing everything`);
+            localStorage.clear();
+        } else {
+            debug(`[LocalStorageProvider] clearing data for ${key}`);
+            localStorage.removeItem(key);
+        }
+    },
 };

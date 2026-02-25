@@ -7,19 +7,38 @@
   <title>YVML Map</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-  <style>
-    html,
-    body,
-    #map {
-      height: 100%;
-      margin: 0;
-    }
-  </style>
 </head>
 
 <body>
+  <!--- START Navbar -->
+  <div id="navbar">
+    <img src="./images/logo.png" />
+    <span>YVML Map</span>
+    <button id="navbar-settings">S</button>
+  </div>
+  <!--- END Navbar -->
+
   <div id="map"></div>
+
+  <!-- START Settings Pane -->
+  <div id="settings-pane" class="hidden">
+    <div class="flex flex-col gap-4">
+      <h3>Settings</h3>
+      <p>
+        This site collects no data on your behalf. Everything is stored in local storage.
+
+        No server is connected to this.
+
+        the source code is available here: <a href="https://github.com/johngarrett/yvml-interactive-map">Github</a>
+        (TODO: move to YVML github)
+      </p>
+
+      <button id="settings-pane-clear-local-storage">Clear Local Storage</button>
+
+      <button id="settings-pane-close">Close</button>
+    </div>
+  </div>
+  <!-- END Settings Pane -->
 
   <!---- START Mini Player -->
   <div id="mini-player" class="hidden">

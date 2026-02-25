@@ -6,6 +6,9 @@ import "./styles.css";
 
 import "leaflet-rotate";
 import "leaflet.offline"; // temp
+import { initSettingsMenu } from "./settings";
+
+initSettingsMenu();
 
 initMap({
     POIs,
