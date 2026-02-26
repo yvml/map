@@ -1,103 +1,10 @@
-import { POITracker, poiTrackerInstance } from "../points";
-import { LocalStorageProvider } from "../storage";
+import { POITracker } from "../points";
 import type { POI } from "../types";
 import { debug, getElementOrThrow, info } from "../utils";
+import { AudioElement } from "./audio-element";
 
 type AudioElementWithController = HTMLAudioElement & {
     controller: AbortController;
-};
-
-// TODO: new file for these
-
-const getTimestampKey = (entry: POI) => {
-    return `${entry.id}-timestamp`;
-};
-
-/**
- * setup HTMLAudioElement
- *
- * 1. pull timestamp from local storage
- * 2. load media
- * 3. add event listener
- */
-const setupAudioElement = ({
-    entry,
-    element,
-}: {
-    entry: POI;
-    element: HTMLAudioElement;
-}) => {
-    element.pause();
-
-    const timestampKey = getTimestampKey(entry);
-    const savedTime = LocalStorageProvider.has(timestampKey)
-        ? Number(JSON.parse(LocalStorageProvider.getOrThrow(timestampKey)))
-        : 0;
-
-    if (!LocalStorageProvider.has(timestampKey)) {
-        debug("AudioElement: no timestampKey found, will start at 0");
-    }
-
-    element.src = `${import.meta.env.BASE_URL}audio/${entry.audioName}`;
-    element.load();
-
-    /*
-     * Safari (and WebKit) ignores currentTime set before src/load(); set it
-     * after metadata is loaded so resume works correctly.
-     */
-    const applyResumePosition = () => {
-        element.currentTime = savedTime;
-        element.removeEventListener("loadedmetadata", applyResumePosition);
-    };
-    element.addEventListener("loadedmetadata", applyResumePosition);
-
-    /*
-     * save audio timestamp whenever the audio is paused
-     */
-    // TODO: maybe break this out into a 'save' function and that will maintian the lifecycle
-    const pauseEventListener = () => {
-        debug(`AudioElement: pause selected on ${entry.id}`);
-        LocalStorageProvider.set(
-            timestampKey,
-            JSON.stringify(element.currentTime),
-        );
-    };
-
-    element.addEventListener("pause", pauseEventListener);
-
-    return pauseEventListener;
-};
-
-/**
- * teardown HTMLAudioElement
- *
- * 1. save timestamp to local storage
- * 2. pause media
- * 3. remove event listener
- */
-const teardownAudioElement = ({
-    element,
-    listener,
-    entry,
-}: {
-    element: HTMLAudioElement;
-    listener: () => void;
-    entry: POI;
-}) => {
-    debug("AudioElement: teardown");
-
-    if (!element.paused) {
-        debug("AudioElement: audio wasn't paused, calling pause");
-        element.pause();
-    }
-
-    LocalStorageProvider.set(
-        getTimestampKey(entry),
-        JSON.stringify(element.currentTime),
-    );
-
-    // TODO: is there a way to remove ALL event listeners?
-    element.removeEventListener("pause", listener);
 };
 
 export class MiniPlayer {
@@ -105,7 +12,7 @@ export class MiniPlayer {
         getElementOrThrow({ id: "mini-player-close" }).addEventListener(
             "click",
             () => {
-                //this.close();
+                // when the user hits close, they're deselecting the active
                 params.poiTracker.deselectActive();
             },
         );
@@ -140,10 +47,10 @@ export class MiniPlayer {
 
             if (this.active.pauseEventListener) {
                 debug("[MiniPlayer] tearing down old audio element");
-                teardownAudioElement({
+                AudioElement.teardown({
                     element: this.elements.audio,
                     entry: this.active.entry,
-                    listener: this.active.pauseEventListener,
+                    pauseListener: this.active.pauseEventListener,
                 });
             }
         }
@@ -160,7 +67,7 @@ export class MiniPlayer {
         this.elements.image.hidden = !entry.imageName;
 
         if (entry.audioName) {
-            this.active.pauseEventListener = setupAudioElement({
+            this.active.pauseEventListener = AudioElement.setup({
                 entry,
                 element: this.elements.audio,
             });
@@ -178,26 +85,14 @@ export class MiniPlayer {
         this.hidden = true;
 
         if (this.active?.pauseEventListener) {
-            teardownAudioElement({
+            AudioElement.teardown({
                 element: this.elements.audio,
                 entry: this.active.entry,
-                listener: this.active.pauseEventListener,
+                pauseListener: this.active.pauseEventListener,
             });
         } else {
             debug("no active listener, not tearing down audio");
         }
-
-        /**
-         * TODO: this dependency chain seems weird.
-         *
-         * POITracker select triggers MiniPlayer display
-         *
-         * MiniPlayer close triggers POITracker's deselectActive
-         *
-         *
-         * and now POITracker also calls this fn
-         */
-        //poiTrackerInstance.deselectActive();
     }
 
     public hidden: boolean = true;
