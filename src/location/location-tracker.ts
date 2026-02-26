@@ -7,7 +7,7 @@ type Listener = (point: LocationPoint) => void;
 
 export class LocationTracker {
     /**
-     * Initalize position tracker and EventListener
+     * Initialize position tracker and EventListener
      */
     constructor() {
         // TODO: move this out
@@ -18,7 +18,7 @@ export class LocationTracker {
             this.handleVisibilityChange,
         );
 
-        // Initalize map elements
+        // Initialize map elements
         // TODO: map elements in this class feels like tight coupling
         const storedPoints = locationStoreInstance
             .getAll()
@@ -86,7 +86,7 @@ export class LocationTracker {
      * Intended to work around iOS pinch-zoom quirks by forcing a vector
      * redraw instead of changing radius/latlng.
      */
-    public zoomAnimaitonCallback = (): void => {
+    public zoomAnimationCallback = (): void => {
         if (this.locationMarker) {
             this.locationMarker.redraw();
         }
@@ -142,7 +142,7 @@ export class LocationTracker {
     private handleError = (error: GeolocationPositionError) => {
         switch (error.code) {
             case GeolocationPositionError.PERMISSION_DENIED: {
-                info("permission denined", error);
+                info("permission denied", error);
                 break;
             }
             case GeolocationPositionError.POSITION_UNAVAILABLE: {

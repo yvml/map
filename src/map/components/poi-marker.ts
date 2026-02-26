@@ -1,7 +1,7 @@
 import { type DivIcon, divIcon } from "leaflet";
 import type { POI } from "../../types";
 
-type IconConfiguartion = {
+type IconConfiguration = {
     POI: Pick<POI, "id">;
     number: number;
 };
@@ -9,7 +9,7 @@ type IconConfiguartion = {
 export const markerIdForPOI = (poi: Pick<POI, "id">): string =>
     `poi-marker-${poi.id}`;
 
-export const poiMarker = (config: IconConfiguartion): DivIcon =>
+export const poiMarker = (config: IconConfiguration): DivIcon =>
     divIcon({
         className: "poi-marker-wrapper",
         html: `

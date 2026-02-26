@@ -2,7 +2,7 @@ export type POI = {
     id: string;
     title: string;
     location: {
-        lattitude: number;
+        latitude: number;
         longitude: number;
     };
     // TODO: non-optional

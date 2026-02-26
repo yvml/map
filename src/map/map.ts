@@ -5,7 +5,7 @@ import { poiTrackerInstance } from "../points";
 import { debug } from "../utils";
 import { LocationTracker } from "../location";
 
-type MapConfiguartion = {
+type MapConfiguration = {
     POIs: Array<POI>;
     initialLocation: [number, number];
     initialZoom: number;
@@ -13,7 +13,7 @@ type MapConfiguartion = {
     layers?: Record<string, TileLayer>;
 };
 
-export const initMap = (config: MapConfiguartion) => {
+export const initMap = (config: MapConfiguration) => {
     const map = L.map(
         "map",
         {
@@ -40,9 +40,9 @@ export const initMap = (config: MapConfiguartion) => {
     }
 
     config.POIs.forEach((POI, index) => {
-        const { lattitude, longitude } = POI.location;
+        const { latitude, longitude } = POI.location;
 
-        L.marker([lattitude, longitude], {
+        L.marker([latitude, longitude], {
             icon: poiMarker({ number: index + 1, POI }),
         })
             .addTo(map)
@@ -56,7 +56,7 @@ export const initMap = (config: MapConfiguartion) => {
 
     map.addLayer(locationTracker.layer);
     // Force a redraw of the accuracy circle during map movements (especially iOS pinch-zoom).
-    map.on("move", locationTracker.zoomAnimaitonCallback);
+    map.on("move", locationTracker.zoomAnimationCallback);
 
     // Safari (macOS/iOS) can change viewport when the location permission dialog
     // appears or closes, so Leaflet’s cached size becomes wrong. Recompute it.

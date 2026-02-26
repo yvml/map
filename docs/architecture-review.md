@@ -30,7 +30,7 @@ The runtime wiring happens in `src/main.ts`, which:
     - Adds the default tile layer and, if configured, a layer control (`L.control.layers`).
     - Iterates over `config.POIs` to create markers with the `poiMarker` icon and wires marker clicks to `poiTrackerInstance.select(POI)`.
     - Listens for map `click` events to call `poiTrackerInstance.deselectActive()` when clicking outside any marker.
-    - Instantiates `new LocationTracker()`, adds `locationTracker.layer` to the map, and subscribes `locationTracker.zoomAnimaitonCallback` to `map.on("move", ...)`.
+    - Instantiates `new LocationTracker()`, adds `locationTracker.layer` to the map, and subscribes `locationTracker.zoomAnimationCallback` to `map.on("move", ...)`.
     - Works around Safari viewport quirks by calling `map.invalidateSize()` on first interaction and via delayed timeouts.
 
 - **`src/map/layers.ts`**
@@ -48,7 +48,7 @@ The runtime wiring happens in `src/main.ts`, which:
 ### POIs and POI tracking
 
 - **`src/points/POIs.ts`**
-  - Contains the static list of POIs (`POI[]`) with `id`, `title`, `location.{lattitude, longitude}`, and optional `imageName` / `audioName`.
+  - Contains the static list of POIs (`POI[]`) with `id`, `title`, `location.{latitude, longitude}`, and optional `imageName` / `audioName`.
 
 - **`src/points/POI-tracker.ts`**
   - `POITracker` manages:
@@ -143,7 +143,7 @@ The runtime wiring happens in `src/main.ts`, which:
 
 - **`src/types/POI.ts`**
   - Defines the `POI` type:
-    - `location.{lattitude, longitude}` (note the spelling).
+    - `location.{latitude, longitude}`.
     - Optional `imageName` and `audioName`.
 
 - **`src/styles.css`**
@@ -280,16 +280,15 @@ Key characteristics:
     - Calls `teardownAudioElement` only if `this.active.listener` is set.
   - If the user navigates directly from one POI with audio to another **without closing** the mini‑player, there is no teardown of the previous listener before the new one is added, which can lead to lingering listeners and duplicated persistence logic.
 
-### Inconsistent naming and spelling
+### Inconsistent naming and spelling (resolved)
 
-- **Files (examples)**:
-  - `src/types/POI.ts` (`lattitude` instead of `latitude`).
-  - `src/map/map.ts` (`MapConfiguartion`).
-  - `src/map/components/poi-marker.ts` (e.g., `IconConfiguartion`).
-  - `src/map/components/poi-popup.ts` (e.g., `PopupConfiguartion`).
+- **Files (examples)** — spellings have been corrected:
+  - `src/types/POI.ts` uses `latitude` (was `lattitude`).
+  - `src/map/map.ts` uses `MapConfiguration` (was `MapConfiguartion`).
+  - `src/map/components/poi-marker.ts` uses `IconConfiguration` (was `IconConfiguartion`).
+  - `src/map/components/poi-popup.ts` uses `PopupConfiguration` (was `PopupConfiguartion`).
 - **Details**:
-  - Misspellings in type and variable names (`lattitude`, `Configuartion`) degrade readability and can cause confusion, especially when interoperating with external APIs that expect `latitude`/`longitude`.
-  - The coexistence of `latitude`/`longitude` (for location history) and `lattitude`/`longitude` (for POIs) introduces two coordinate conventions within the same codebase.
+  - The codebase now uses consistent `latitude`/`longitude` and `*Configuration` naming throughout.
 
 ### Overly generic or unused types
 
@@ -352,7 +351,7 @@ Key characteristics:
 
 ### Optimize map move redraw behavior
 
-- Consider **throttling** or **debouncing** `zoomAnimaitonCallback` for map `move` events:
+- Consider **throttling** or **debouncing** `zoomAnimationCallback` for map `move` events:
   - For example, only redraw at a fixed interval or after movement settles.
 - Re‑evaluate whether redrawing the entire path on every move is necessary:
   - If Leaflet’s built‑in vector handling suffices, `pathLine.redraw()` might be removed or limited to specific scenarios (e.g., only on zoom end).
@@ -375,10 +374,8 @@ Key characteristics:
 
 ### Normalize naming and clean up types
 
-- Standardize on `latitude` and `longitude` across the codebase:
-  - Update `POI.location.lattitude` to `latitude` and adjust usages.
-- Fix spelling of configuration types:
-  - Rename `MapConfiguartion`, `IconConfiguartion`, and `PopupConfiguartion` to `MapConfiguration`, `IconConfiguration`, and `PopupConfiguration`.
+- ~~Standardize on `latitude` and `longitude`~~ (done).
+- ~~Fix spelling of configuration types~~ (done).
 - Remove or complete unused/half‑implemented types:
   - Either remove `AudioElementWithController` or extend the implementation to genuinely use `AbortController`.
 

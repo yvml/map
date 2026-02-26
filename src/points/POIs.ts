@@ -6,7 +6,7 @@ export const POIs: Array<POI> = [
         title: "Parking Lot",
         id: "parking-lot",
         location: {
-            lattitude: 34.181922,
+            latitude: 34.181922,
             longitude: -116.414579,
         },
     },
@@ -16,17 +16,17 @@ export const POIs: Array<POI> = [
         imageName: "quonset.jpg",
         audioName: "quonset.m4a",
         location: {
-            lattitude: 34.181792,
+            latitude: 34.181792,
             longitude: -116.414532,
         },
     },
     {
-        title: "Foundary",
-        id: "foundary",
+        title: "Foundry",
+        id: "foundry",
         imageName: "foundry.jpg",
         audioName: "foundry.m4a",
         location: {
-            lattitude: 34.181725,
+            latitude: 34.181725,
             longitude: -116.414696,
         },
     },
@@ -35,7 +35,7 @@ export const POIs: Array<POI> = [
         id: "outdoor-shower",
         audioName: "shower-cubes.m4a",
         location: {
-            lattitude: 34.181759,
+            latitude: 34.181759,
             longitude: -116.414433,
         },
     },
@@ -45,7 +45,7 @@ export const POIs: Array<POI> = [
         imageName: "airstream.jpg",
         audioName: "airstream.m4a",
         location: {
-            lattitude: 34.181665,
+            latitude: 34.181665,
             longitude: -116.414396,
         },
     },
@@ -54,7 +54,7 @@ export const POIs: Array<POI> = [
         imageName: "sleeping-library.jpg",
         id: "library",
         location: {
-            lattitude: 34.18181,
+            latitude: 34.18181,
             longitude: -116.41425,
         },
     },
@@ -62,7 +62,7 @@ export const POIs: Array<POI> = [
         title: "Concrete Fountain",
         id: "fountain",
         location: {
-            lattitude: 34.1819,
+            latitude: 34.1819,
             longitude: -116.414152,
         },
     },
@@ -71,7 +71,7 @@ export const POIs: Array<POI> = [
         id: "gallery",
         imageName: "gallery.jpg",
         location: {
-            lattitude: 34.181959,
+            latitude: 34.181959,
             longitude: -116.414309,
         },
     },
@@ -81,7 +81,7 @@ export const POIs: Array<POI> = [
         id: "heidi-derek-studio",
         imageName: "studios.jpg",
         location: {
-            lattitude: 34.181909,
+            latitude: 34.181909,
             longitude: -116.414384,
         },
     },
@@ -89,7 +89,7 @@ export const POIs: Array<POI> = [
         title: "Recording Studio",
         id: "recording-studio",
         location: {
-            lattitude: 34.181869,
+            latitude: 34.181869,
             longitude: -116.414445,
         },
     },
@@ -97,7 +97,7 @@ export const POIs: Array<POI> = [
         title: "Sculpture Garden",
         id: "sculpture-garden",
         location: {
-            lattitude: 34.182357,
+            latitude: 34.182357,
             longitude: -116.41468,
         },
     },
@@ -106,7 +106,7 @@ export const POIs: Array<POI> = [
         id: "chicken-wire-dinosaur",
         audioName: "dinosaur.m4a",
         location: {
-            lattitude: 34.182057,
+            latitude: 34.182057,
             longitude: -116.413928,
         },
     },
