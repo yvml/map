@@ -1,10 +1,9 @@
 import { mapLayers } from "./map/layers";
 import { initMap } from "./map/map";
-import { POIs, POITracker } from "./points";
+import { POIController, POIs, POITracker } from "./points";
 import { SettingsMenu } from "./settings";
 import { locationStoreInstance, LocationTracker } from "./location";
 import { ConsoleTracker } from "./console";
-import { MiniPlayer } from "./mini-player";
 
 import "./styles.css"; // TODO: remove tailwind and import normally
 
@@ -17,6 +16,11 @@ new SettingsMenu();
 
 const poiTracker = new POITracker();
 const locationTracker = new LocationTracker();
+
+/**
+ * controlls showing the popup and marking the cirlces
+ */
+new POIController({ poiTracker });
 
 initMap({
     POIs,
@@ -41,8 +45,6 @@ initMap({
         locationTracker,
     },
 });
-
-new MiniPlayer({ poiTracker });
 
 setInterval(() => {
     locationStoreInstance.saveToStorage();

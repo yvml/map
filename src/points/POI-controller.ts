@@ -3,9 +3,9 @@ import type { POI } from "../types";
 import { debug, getElementOrThrow, info } from "../utils";
 import { AudioElement } from "./audio-element";
 
-export class MiniPlayer {
+export class POIController {
     constructor(params: { poiTracker: POITracker }) {
-        getElementOrThrow({ id: "mini-player-close" }).addEventListener(
+        getElementOrThrow({ id: "poi-popup-close" }).addEventListener(
             "click",
             () => {
                 // when the user hits close, they're deselecting the active
@@ -14,15 +14,15 @@ export class MiniPlayer {
         );
 
         this.elements = {
-            audio: getElementOrThrow({ id: "mini-player-audio-element" }),
-            container: getElementOrThrow({ id: "mini-player" }),
-            image: getElementOrThrow({ id: "mini-player-image" }),
-            title: getElementOrThrow({ id: "mini-player-title" }),
+            audio: getElementOrThrow({ id: "poi-popup-audio-element" }),
+            container: getElementOrThrow({ id: "poi-popup" }),
+            image: getElementOrThrow({ id: "poi-popup-image" }),
+            title: getElementOrThrow({ id: "poi-popup-title" }),
         };
 
         params.poiTracker.addListener((activePOI) => {
             debug(
-                `[MiniPlayer] listener for poiTrackerInstance fired: ${activePOI}`,
+                `[POIController] listener for poiTrackerInstance fired: ${activePOI}`,
             );
             if (activePOI) {
                 this.display(activePOI);
@@ -38,11 +38,11 @@ export class MiniPlayer {
     display(entry: POI) {
         if (this.active?.entry && entry.id !== this.active.entry?.id) {
             info(
-                `[MiniPlayer] switching from ${this.active.entry?.id} to ${entry.id}`,
+                `[POIController] switching from ${this.active.entry?.id} to ${entry.id}`,
             );
 
             if (this.active.pauseEventListener) {
-                debug("[MiniPlayer] tearing down old audio element");
+                debug("[POIController] tearing down old audio element");
                 AudioElement.teardown({
                     element: this.elements.audio,
                     entry: this.active.entry,

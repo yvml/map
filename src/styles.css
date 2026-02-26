@@ -106,7 +106,7 @@ body {
   border: 1px solid #000;
 }
 
-#mini-player {
+#poi-popup {
   position: fixed;
 
   left: max(16px, env(safe-area-inset-left));
@@ -124,22 +124,22 @@ body {
   background: white;
 }
 
-#mini-player-title {
+#poi-popup-title {
   font-weight: bold;
   font-size: medium;
   margin: 1;
 }
 
-#mini-player-image {
+#poi-popup-image {
   width: 60%;
 }
 
-#mini-player-close {
+#poi-popup-close {
   height: 30px;
   width: 30px;
 }
 
-#mini-player-audio {
+#poi-popup-audio {
   background-color: #d4d4d4;
   border: #b7b7b7;
   border-style: solid;
@@ -151,6 +151,6 @@ body {
   border-width: 2px;
 }
 
-#mini-player-audio-element {
+#poi-popup-audio-element {
   width: 100%;
 }
