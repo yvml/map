@@ -1,26 +1,49 @@
 import { mapLayers } from "./map/layers";
 import { initMap } from "./map/map";
-import { POIs } from "./points";
-
-import "./styles.css";
-
-import "leaflet-rotate";
-import "leaflet.offline"; // temp
+import { POIController, POIs, POITracker } from "./points";
 import { SettingsMenu } from "./settings";
-import { locationStoreInstance } from "./location";
+import { locationStoreInstance, LocationTracker } from "./location";
 import { ConsoleTracker } from "./console";
 
-const consoleTracker = new ConsoleTracker();
-consoleTracker.subscribe();
+import "./styles.css"; // TODO: remove tailwind and import normally
 
+import "leaflet-rotate";
+
+import "leaflet.offline"; // temp
+
+new ConsoleTracker();
 new SettingsMenu();
+
+const poiTracker = new POITracker();
+const locationTracker = new LocationTracker();
+
+/**
+ * controlls showing the popup and marking the cirlces
+ */
+new POIController({ poiTracker });
 
 initMap({
     POIs,
-    initialLocation: [34.181983, -116.414443],
-    initialZoom: 19,
-    defaultLayer: mapLayers.satellite,
-    layers: mapLayers,
+    config: {
+        initialLocation: [34.181983, -116.414443],
+        initialZoom: 19,
+        defaultLayer: mapLayers.satellite,
+        layers: mapLayers,
+        mapOptions: {
+            rotate: true,
+            bearing: 180, // start upside down
+            touchRotate: true,
+            zoomControl: false,
+            rotateControl: undefined,
+            zoomAnimation: true,
+            markerZoomAnimation: true,
+            preferCanvas: true,
+        },
+    },
+    providers: {
+        poiTracker,
+        locationTracker,
+    },
 });
 
 setInterval(() => {

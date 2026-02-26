@@ -1,45 +1,55 @@
 import type { POI } from "../types";
 import L, { TileLayer, type MapOptions } from "leaflet";
 import { poiMarker } from "./components/poi-marker";
-import { poiTrackerInstance } from "../points";
+import { POITracker } from "../points";
 import { debug } from "../utils";
 import { LocationTracker } from "../location";
 
 type MapConfiguration = {
-    POIs: Array<POI>;
     initialLocation: [number, number];
     initialZoom: number;
     defaultLayer: TileLayer;
     layers?: Record<string, TileLayer>;
+    mapOptions: MapOptions & {
+        /* from leaflet-rotate */
+        rotate: boolean;
+        bearing: number;
+        touchRotate: boolean;
+        rotateControl: unknown;
+    };
 };
 
-export const initMap = (config: MapConfiguration) => {
-    const map = L.map(
-        "map",
-        {
-            rotate: true,
-            bearing: 180, // start upside down
-            touchRotate: true,
-            zoomControl: false,
-            rotateControl: undefined,
-            zoomAnimation: true,
-            markerZoomAnimation: true,
-            preferCanvas: true,
-        } as unknown as MapOptions /* these come from the extension */,
-    )
+type MapParameters = {
+    config: MapConfiguration;
+    providers: {
+        poiTracker: POITracker;
+        locationTracker: LocationTracker;
+    };
+    POIs: Array<POI>;
+};
+
+export const initMap = (params: MapParameters) => {
+    const { config } = params;
+    const { poiTracker, locationTracker } = params.providers;
+
+    const map = L.map("map", config.mapOptions)
         .setView(config.initialLocation, config.initialZoom)
         .on("click", () => {
             // deselect the active POI when the user clicks outside on the map
-            poiTrackerInstance.deselectActive();
+            poiTracker.deselectActive();
         });
 
     config.defaultLayer.addTo(map);
+
+    map.addLayer(locationTracker.layer);
+    // Force a redraw of the accuracy circle during map movements (especially iOS pinch-zoom).
+    map.on("move", locationTracker.zoomAnimationCallback);
 
     if (config.layers /* TODO: && buildFlag === "debug" */) {
         L.control.layers(config.layers).addTo(map);
     }
 
-    config.POIs.forEach((POI, index) => {
+    params.POIs.forEach((POI, index) => {
         const { latitude, longitude } = POI.location;
 
         L.marker([latitude, longitude], {
@@ -47,16 +57,9 @@ export const initMap = (config: MapConfiguration) => {
         })
             .addTo(map)
             .on("click", () => {
-                poiTrackerInstance.select(POI);
+                poiTracker.select(POI);
             });
     });
-
-    // TODO: move into main.ts
-    const locationTracker = new LocationTracker();
-
-    map.addLayer(locationTracker.layer);
-    // Force a redraw of the accuracy circle during map movements (especially iOS pinch-zoom).
-    map.on("move", locationTracker.zoomAnimationCallback);
 
     // Safari (macOS/iOS) can change viewport when the location permission dialog
     // appears or closes, so Leaflet’s cached size becomes wrong. Recompute it.

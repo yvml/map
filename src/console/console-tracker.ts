@@ -3,11 +3,8 @@ import { getElementOrThrow, logger, type LogLevel } from "../utils";
 export class ConsoleTracker {
     constructor() {
         this.consoleElement = getElementOrThrow({ id: "console" });
-    }
-
-    public subscribe = () => {
         logger.subscribe(this.loggerSubscription);
-    };
+    }
 
     loggerSubscription = (level: LogLevel, messages: unknown[]) => {
         const line = document.createElement("div");
