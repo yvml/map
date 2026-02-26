@@ -29,9 +29,6 @@ class LocationStore {
 
             if (distanceInMeters < 1) {
                 // less than 1 meter
-                debug(
-                    `[LocationStore] distance not great enough, returning early.`,
-                );
                 return;
             }
         }
