@@ -96,6 +96,8 @@ export class LocationTracker {
 
     private handleVisibilityChange = () => {
         if (document.hidden) {
+            // TODO: subscribe and move elsewhere?
+            locationStoreInstance.saveToStorage();
             this.stop();
         } else {
             this.start();

@@ -1,7 +1,7 @@
 import { LocalStorageProvider } from "../storage";
 import { getElementOrThrow } from "../utils";
 
-class SettingsMenu {
+export class SettingsMenu {
     constructor() {
         const settingsButton = getElementOrThrow({ id: "navbar-settings" });
         const settingsPane = getElementOrThrow({ id: "settings-pane" });
@@ -25,9 +25,3 @@ class SettingsMenu {
         // TODO: read and write settings
     }
 }
-
-let settingsMenuInstance: SettingsMenu | undefined;
-
-export const initSettingsMenu = () => {
-    settingsMenuInstance = new SettingsMenu();
-};

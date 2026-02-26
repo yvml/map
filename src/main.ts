@@ -6,10 +6,14 @@ import "./styles.css";
 
 import "leaflet-rotate";
 import "leaflet.offline"; // temp
-import { initSettingsMenu } from "./settings";
+import { SettingsMenu } from "./settings";
 import { locationStoreInstance } from "./location";
+import { ConsoleTracker } from "./console";
 
-initSettingsMenu();
+const consoleTracker = new ConsoleTracker();
+consoleTracker.subscribe();
+
+new SettingsMenu();
 
 initMap({
     POIs,

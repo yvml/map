@@ -58,6 +58,35 @@ body {
   flex: 1;
 }
 
+#console {
+  height: 20%;
+  min-height: 0;
+  background-color: black;
+  overflow-y: auto;
+}
+
+.log-line {
+  font-family: monospace;
+  color: white;
+}
+
+.log-line-level-debug {
+  border-left-color: white;
+  color: white;
+}
+
+.log-line-level-info {
+  border-left-color: #0d6efd;
+  background: #e7f1ff;
+  color: #084298;
+}
+
+.log-line-level-warn {
+  border-left-color: #ffc107;
+  background: #fff3cd;
+  color: #664d03;
+}
+
 /** TODO style */
 #settings-pane {
   position: absolute;
