@@ -9,4 +9,10 @@ export type POI = {
     imageName?: string;
     // TODO: non-optional
     audioName?: string;
+
+    // TODO: non-optional
+    polygon?: {
+        path: Array<[number, number]>; // lat, long
+        color: string;
+    };
 };

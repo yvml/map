@@ -1,6 +1,11 @@
-import { mapLayers } from "./map/layers";
+import { tileLayers } from "./map/layers";
 import { initMap } from "./map/map";
-import { POIController, POIs, POITracker } from "./points";
+import {
+    POIController,
+    POIPolygonController,
+    POIs,
+    POITracker,
+} from "./points";
 import { SettingsMenu } from "./settings";
 import { locationStoreInstance, LocationTracker } from "./location";
 import { ConsoleTracker } from "./console";
@@ -18,17 +23,22 @@ const poiTracker = new POITracker();
 const locationTracker = new LocationTracker();
 
 /**
- * controlls showing the popup and marking the cirlces
+ * controlls showing the popup and marking the circles
  */
 new POIController({ poiTracker });
+
+/**
+ * controlls showing the polygons for POIs
+ */
+const polygonController = new POIPolygonController({ POIs });
 
 initMap({
     POIs,
     config: {
         initialLocation: [34.181983, -116.414443],
         initialZoom: 19,
-        defaultLayer: mapLayers.satellite,
-        layers: mapLayers,
+        defaultLayer: tileLayers.satellite,
+        tileLayers,
         mapOptions: {
             rotate: true,
             bearing: 180, // start upside down
@@ -40,6 +50,8 @@ initMap({
             preferCanvas: true,
         },
     },
+    // TODO: baseclass for exposing a layer?
+    additionalLayers: [locationTracker.layer, polygonController.layer],
     providers: {
         poiTracker,
         locationTracker,

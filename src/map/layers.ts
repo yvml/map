@@ -21,7 +21,7 @@ const satelliteLayer = tileLayer(
     },
 );
 
-export const mapLayers = {
+export const tileLayers = {
     osm: osmLayer,
     satellite: satelliteLayer,
 };

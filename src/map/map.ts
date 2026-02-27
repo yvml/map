@@ -1,5 +1,5 @@
 import type { POI } from "../types";
-import L, { TileLayer, type MapOptions } from "leaflet";
+import L, { Layer, TileLayer, type MapOptions } from "leaflet";
 import { poiMarker } from "./components/poi-marker";
 import { POITracker } from "../points";
 import { debug } from "../utils";
@@ -9,7 +9,7 @@ type MapConfiguration = {
     initialLocation: [number, number];
     initialZoom: number;
     defaultLayer: TileLayer;
-    layers?: Record<string, TileLayer>;
+    tileLayers?: Record<string, TileLayer>;
     mapOptions: MapOptions & {
         /* from leaflet-rotate */
         rotate: boolean;
@@ -25,6 +25,7 @@ type MapParameters = {
         poiTracker: POITracker;
         locationTracker: LocationTracker;
     };
+    additionalLayers?: Layer[]; // TODO: merge with layers in config? rename one
     POIs: Array<POI>;
 };
 
@@ -41,14 +42,18 @@ export const initMap = (params: MapParameters) => {
 
     config.defaultLayer.addTo(map);
 
-    map.addLayer(locationTracker.layer);
+    params.additionalLayers?.forEach((layer) => map.addLayer(layer));
+
+    //map.addLayer(locationTracker.layer);
     // Force a redraw of the accuracy circle during map movements (especially iOS pinch-zoom).
     map.on("move", locationTracker.zoomAnimationCallback);
 
-    if (config.layers /* TODO: && buildFlag === "debug" */) {
-        L.control.layers(config.layers).addTo(map);
+    // add UI widget for holding onto layers
+    if (config.tileLayers /* TODO: && buildFlag === "debug" */) {
+        L.control.layers(config.tileLayers).addTo(map);
     }
 
+    // TODO: move this into a layer exposed on the POIControlller
     params.POIs.forEach((POI, index) => {
         const { latitude, longitude } = POI.location;
 
