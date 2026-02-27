@@ -1,3 +1,5 @@
+import L from "leaflet";
+
 export type POI = {
     id: string;
     title: string;
@@ -13,6 +15,6 @@ export type POI = {
     // TODO: non-optional
     polygon?: {
         path: Array<[number, number]>; // [lat, lng] (Leaflet order)
-        color: string;
+        options: L.PathOptions;
     };
 };
