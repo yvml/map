@@ -12,7 +12,7 @@ export type POI = {
 
     // TODO: non-optional
     polygon?: {
-        path: Array<[number, number]>; // lat, long
+        path: Array<[number, number]>; // [lat, lng] (Leaflet order)
         color: string;
     };
 };

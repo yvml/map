@@ -42,6 +42,7 @@ export const initMap = (params: MapParameters) => {
 
     config.defaultLayer.addTo(map);
 
+    debug(`[map] adding additionalLayers: ${params.additionalLayers}`);
     params.additionalLayers?.forEach((layer) => map.addLayer(layer));
 
     //map.addLayer(locationTracker.layer);
