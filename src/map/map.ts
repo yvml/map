@@ -25,7 +25,7 @@ type MapParameters = {
         poiTracker: POITracker;
         locationTracker: LocationTracker;
     };
-    additionalLayers?: Layer[]; // TODO: merge with layers in config? rename one
+    additionalLayers?: Layer[];
     POIs: Array<POI>;
 };
 
@@ -45,7 +45,6 @@ export const initMap = (params: MapParameters) => {
     debug(`[map] adding additionalLayers: ${params.additionalLayers}`);
     params.additionalLayers?.forEach((layer) => map.addLayer(layer));
 
-    //map.addLayer(locationTracker.layer);
     // Force a redraw of the accuracy circle during map movements (especially iOS pinch-zoom).
     map.on("move", locationTracker.zoomAnimationCallback);
 

@@ -28,17 +28,15 @@ const svgLabel = () =>
 </svg>
 `;
 
-const poiToLayers = (poi: POI) => {
-    const polygon = L.polygon(poi.polygon.path, poi.polygon.options);
-
+const poiToLabel = (poi: POI) => {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgLabel(), "image/svg+xml");
 
     const svgElement = svgDoc.documentElement as unknown as SVGElement;
 
-    const labelText = svgElement.querySelector(
-        "#label-text",
-    ) as SVGTextElement | null;
+    const labelText = svgElement.querySelector("#label-text") as
+        | SVGTextElement
+        | undefined;
 
     if (!labelText) {
         debug("no element");
@@ -80,66 +78,17 @@ const poiToLayers = (poi: POI) => {
         });
     }
 
-    const label = L.svgOverlay(svgElement, polygon.getBounds(), {
+    return svgElement;
+};
+
+const poiToLayers = (poi: POI) => {
+    const polygon = L.polygon(poi.polygon.path, poi.polygon.options);
+
+    const label = L.svgOverlay(poiToLabel(poi), polygon.getBounds(), {
         interactive: false,
     });
 
     return [polygon, label];
-    //const polygon = L.polygon(
-    //    poi.polygon.path,
-    //    poi.polygon.options,
-    //).bindTooltip(poi.title, {
-    //    permanent: true,
-    //    direction: "center",
-    //    className: "polygon-label",
-    //});
-
-    //// Create an SVG DOM element for the overlay so Leaflet
-    //// receives a proper element instead of a plain string.
-    //const parser = new DOMParser();
-    //const svgElement = parser.parseFromString(
-    //    svgLabel(),
-    //    "image/svg+xml",
-    //).documentElement;
-
-    //// TODO: cleanup and docuemnt
-    //const labelText = svgElement.querySelector("#label-text");
-    //if (labelText) {
-    //    //labelText.textContent = poi.title;
-    //    const lines = poi.title.split(" ");
-    //    labelText.innerHTML = "";
-    //    const fontSize = 60;
-    //    const lineHeight = fontSize * 1.1; // 10% breathing room
-
-    //    lines.forEach((line, i) => {
-    //        const tspan = document.createElementNS(
-    //            "http://www.w3.org/2000/svg",
-    //            "tspan",
-    //        );
-    //        tspan.setAttribute("x", "0");
-    //        //tspan.setAttribute("dy", i === 0 ? "0" : "30");
-    //        tspan.setAttribute(
-    //            "dy",
-    //            i === 0 ? `${-lineHeight / 2}` : `${lineHeight}`,
-    //        );
-    //        tspan.textContent = line;
-    //        labelText.appendChild(tspan);
-    //    });
-    //} else {
-    //    debug("no element");
-    //}
-
-    //debug(svgElement);
-
-    //const label = L.svgOverlay(
-    //    svgElement as unknown as SVGElement, // TODO; remove casting
-    //    polygon.getBounds(),
-    //    {
-    //        interactive: false,
-    //    },
-    //);
-
-    //return [polygon, label];
 };
 
 export class POIPolygonController {
