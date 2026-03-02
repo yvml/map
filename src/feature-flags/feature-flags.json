@@ -1,0 +1,12 @@
+[
+  {
+    "name": "ExampleFlagOne",
+    "description": "Example feature flag. Toggle this to test the settings UI.",
+    "defaultValue": false
+  },
+  {
+    "name": "ExampleFlagTwo",
+    "description": "Another example flag. Replace these with real flags as needed.",
+    "defaultValue": true
+  }
+]
