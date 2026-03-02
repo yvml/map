@@ -4,6 +4,9 @@ export class ConsoleTracker {
     constructor() {
         this.consoleElement = getElementOrThrow({ id: "console" });
         logger.subscribe(this.loggerSubscription);
+
+        // TODO:
+        //const showConsole = getFeatureFlagProviderOrThrow().get("console").value;
     }
 
     loggerSubscription = (level: LogLevel, messages: unknown[]) => {
