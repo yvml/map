@@ -85,7 +85,15 @@ const poiToLabel = (poi: POI) => {
 };
 
 const poiToLayers = (poi: POI, poiTracker: POITracker) => {
-    const polygon = L.polygon(poi.polygon.path, poi.polygon.options);
+    const polygon = L.polygon(poi.polygon.path, {
+        ...poi.polygon.options,
+        color: "#7a7a7a",
+        weight: 5,
+        dashArray: "12 12",
+        fillColor: "#bdbdbd",
+        fillOpacity: 0.15,
+        lineJoin: "round",
+    });
 
     //const label = L.svgOverlay(poiToLabel(poi), polygon.getBounds(), {
     //    interactive: false,
