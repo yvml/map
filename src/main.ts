@@ -19,7 +19,7 @@ import "leaflet.offline"; // TODO: remove
 
 import "leaflet-edgebuffer"; // prevents tile flashing
 
-import { debug, info } from "./utils";
+import { debug } from "./utils";
 import { LocationController } from "./location/location-controller";
 
 initFeatureFlagProvider();
@@ -30,11 +30,6 @@ new SettingsMenu();
 const poiTracker = new POITracker();
 const locationTracker = new LocationTracker();
 const orientationTracker = new OrientationTracker();
-
-// TODO: move this to the location button on the UI
-orientationTracker.requestOrientationPermission().then((result) => {
-    info(`orentation request result`, result);
-});
 
 /**
  * store locations to the database

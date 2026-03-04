@@ -18,8 +18,18 @@ export class LocationStore {
 
     private handleNewLocation = (point: LocationPoint) => {
         /**
+         * only save if its a meaningful measurement
+         *
+         * TODO: play around with this value
+         */
+        if (point.accuracy > 10) {
+            debug("[LocationStore] accuracy above 10, not saving");
+            return;
+        }
+        /**
          * Only add if the location is within YVML
          */
+        // TODO
 
         /**
          * Only add if the distance between two points is great enough

@@ -1,4 +1,4 @@
-import { debug } from "../utils";
+import { debug, getElementOrThrow, info } from "../utils";
 import type { LocationTracker } from "./location-tracker";
 import type {
     OrientationTracker,
@@ -28,6 +28,25 @@ export class LocationController {
         this.layer = L.layerGroup([
             this.pathLine, // this one exists immediately
         ]);
+
+        getElementOrThrow({ id: "locate-button" }).addEventListener(
+            "click",
+            () => {
+                debug(
+                    `[LocationController] locate button clicked, begin tracking`,
+                );
+
+                locationTracker.start();
+
+                orientationTracker
+                    .requestOrientationPermission()
+                    .then((result) => {
+                        info(
+                            `[OrientationTracker] requestOrientationPermission: ${result}`,
+                        );
+                    });
+            },
+        );
 
         locationTracker.addListener(this.handleNewLocation);
         orientationTracker.addListener(this.handleNewOrientation);

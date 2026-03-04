@@ -9,7 +9,6 @@ export class LocationTracker extends Observable<LocationPoint> {
     constructor() {
         // TODO: move this out
         super();
-        this.start();
 
         document.addEventListener(
             "visibilitychange",
@@ -56,6 +55,7 @@ export class LocationTracker extends Observable<LocationPoint> {
         if (document.hidden) {
             this.stop();
         } else {
+            // TODO: only if the user has hit the locate button
             this.start();
         }
     };
