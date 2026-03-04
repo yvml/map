@@ -50,8 +50,7 @@ export class OrientationTracker extends Observable<OrientationData> {
     };
 
     private startOrientationTracking = () => {
-        // not in the standard lib
-        if ("ondeviceorientationabsolute" in (window as object)) {
+        if ("ondeviceorientationabsolute" in window) {
             debug(`[OrientationTracker] listening on absolute`);
             window.addEventListener(
                 "deviceorientationabsolute",
