@@ -6,8 +6,6 @@
       "name": "yvml-interactive-map",
       "dependencies": {
         "leaflet": "^1.9.4",
-        "leaflet-doubletapdrag": "^0.1.2",
-        "leaflet-doubletapdragzoom": "^0.3.2",
         "leaflet-edgebuffer": "^1.0.7",
         "leaflet-rotate": "^0.2.8",
         "leaflet.offline": "^3.2.1",
@@ -333,10 +331,6 @@
     "keyv": ["keyv@4.5.4", "", { "dependencies": { "json-buffer": "3.0.1" } }, "sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw=="],
 
     "leaflet": ["leaflet@1.9.4", "", {}, "sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA=="],
-
-    "leaflet-doubletapdrag": ["leaflet-doubletapdrag@0.1.2", "", { "peerDependencies": { "leaflet": "^1.0.0" } }, "sha512-YE7fyTrAAMxy+tX4VxqM14TuSvLPaiXzmYGCQnp3D1phmCg7AEe6KZqgQa/gJ8w5oocG1RTSNMQDlMIDAwmCWA=="],
-
-    "leaflet-doubletapdragzoom": ["leaflet-doubletapdragzoom@0.3.2", "", { "dependencies": { "leaflet-doubletapdrag": "^0.1.0" }, "peerDependencies": { "leaflet": "^1.0.0" } }, "sha512-zwW9sWR2V8q0y5xFYvK8guKpHHZ9XDYAvVsyL78QmaCLkAeMpZwgV/yAMG9rRleF+k9zjVWQp/C5tu2OhkGnFw=="],
 
     "leaflet-edgebuffer": ["leaflet-edgebuffer@1.0.7", "", {}, "sha512-ayapUPbKJPTCNr50xYtYGJRfXTLIqs60goyHxCV3XREMqV4Ima8R3GUCKU/UIxzLPc+Be8U6yuxKqkBFoHE0Rw=="],
 

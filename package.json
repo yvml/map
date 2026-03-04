@@ -32,8 +32,6 @@
     },
     "dependencies": {
         "leaflet": "^1.9.4",
-        "leaflet-doubletapdrag": "^0.1.2",
-        "leaflet-doubletapdragzoom": "^0.3.2",
         "leaflet-edgebuffer": "^1.0.7",
         "leaflet-rotate": "^0.2.8",
         "leaflet.offline": "^3.2.1"
