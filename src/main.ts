@@ -71,13 +71,14 @@ initMap({
             zoomAnimation: true,
             markerZoomAnimation: true,
             preferCanvas: true,
-            edgeBufferTiles: 4,
         },
     },
     // TODO: baseclass for exposing a layer?
     additionalLayers: [locationController.layer, polygonController.layer],
     providers: {
         poiTracker,
+        locationTracker,
+        orientationTracker,
         locationController,
     },
 });

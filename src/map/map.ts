@@ -4,6 +4,7 @@ import { poiMarker } from "./components/poi-marker";
 import { POITracker } from "../points";
 import { debug } from "../utils";
 import type { LocationController } from "../location/location-controller";
+import type { LocationTracker, OrientationTracker } from "../location";
 
 type MapConfiguration = {
     initialLocation: [number, number];
@@ -23,6 +24,10 @@ type MapParameters = {
     config: MapConfiguration;
     providers: {
         poiTracker: POITracker;
+
+        orientationTracker: OrientationTracker;
+        locationTracker: LocationTracker;
+
         locationController: LocationController;
     };
     additionalLayers?: Layer[];
@@ -31,12 +36,34 @@ type MapParameters = {
 
 export const initMap = (params: MapParameters) => {
     const { config } = params;
-    const { poiTracker, locationController } = params.providers;
+    const {
+        poiTracker,
+        locationController,
+        orientationTracker,
+        locationTracker,
+    } = params.providers;
 
     const map = L.map("map", config.mapOptions).setView(
         config.initialLocation,
         config.initialZoom,
     );
+
+    // TODO: maybe these should go elsewhere
+    let lastRotation = 0; // maybe the tracker should limit
+    orientationTracker.addListener(({ heading }) => {
+        const now = performance.now();
+        if (now - lastRotation < 50) return; // 20fps cap
+        lastRotation = now;
+
+        debug(`[map] setting heading`);
+        map.setBearing(heading); // TODO: type
+    });
+
+    locationTracker.addListener(({ latitude, longitude }) => {
+        map.setView([latitude, longitude], map.getZoom(), {
+            animate: true,
+        });
+    });
     // this conflicts with the polygons. TODO
     //.on("click", () => {
     //    // deselect the active POI when the user clicks outside on the map
