@@ -61,13 +61,13 @@ export const initMap = (params: MapParameters) => {
             let delta = corrected - lastHeading;
             delta = ((delta + 540) % 360) - 180;
 
-            if (Math.abs(delta) < 5) return;
+            if (Math.abs(delta) < 3) return;
 
             lastHeading = corrected;
         }
         // --- APPLY ROTATION ---
         debug(`[map] setting heading`);
-        map.setBearing(180 - heading); // TODO: type
+        map.setBearing(heading); // TODO: type
     });
 
     locationTracker.addListener(({ latitude, longitude }) => {
