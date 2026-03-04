@@ -7,7 +7,7 @@ import {
     POITracker,
 } from "./points";
 import { SettingsMenu } from "./settings";
-import { locationStoreInstance, LocationTracker } from "./location";
+import { LocationStore, LocationTracker } from "./location";
 import { ConsoleTracker } from "./console";
 import { initFeatureFlagProvider } from "./feature-flags";
 
@@ -16,6 +16,8 @@ import "./styles.css"; // TODO: remove tailwind and import normally
 import "leaflet-rotate";
 
 import "leaflet.offline"; // temp
+import { debug } from "./utils";
+import { LocationController } from "./location/location-controller";
 
 initFeatureFlagProvider();
 
@@ -26,7 +28,20 @@ const poiTracker = new POITracker();
 const locationTracker = new LocationTracker();
 
 /**
- * controlls showing the popup and marking the circles
+ * store locations to the database
+ */
+const locationStore = new LocationStore({ locationTracker });
+
+/**
+ * controls showing walking path and current location dot
+ */
+const locationController = new LocationController({
+    locationTracker,
+    initialPoints: locationStore.getAllLatLng(),
+});
+
+/**
+ * controls showing the popup and marking the circles
  */
 new POIController({ poiTracker });
 
@@ -54,13 +69,19 @@ initMap({
         },
     },
     // TODO: baseclass for exposing a layer?
-    additionalLayers: [locationTracker.layer, polygonController.layer],
+    additionalLayers: [locationController.layer, polygonController.layer],
     providers: {
         poiTracker,
-        locationTracker,
+        locationController,
     },
 });
 
 setInterval(() => {
-    locationStoreInstance.saveToStorage();
+    locationStore.saveToStorage();
 }, 15000); // every 15 seconds, save location data to storage
+
+document.addEventListener("visibilitychange", () => {
+    debug("[main] handleVisibilityChange");
+    // save location when the user minimizes
+    locationStore.saveToStorage();
+});
