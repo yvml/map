@@ -51,9 +51,12 @@ export const initMap = (params: MapParameters) => {
     // TODO: maybe these should go elsewhere
 
     let lastHeading: number | undefined;
+
     orientationTracker.addListener(({ heading }) => {
         const normalized = ((heading % 360) + 360) % 360;
-        const corrected = (normalized + 180) % 360;
+
+        // Invert for map rotation
+        const corrected = (360 - normalized) % 360;
 
         if (lastHeading === undefined) {
             lastHeading = corrected;
@@ -61,13 +64,13 @@ export const initMap = (params: MapParameters) => {
             let delta = corrected - lastHeading;
             delta = ((delta + 540) % 360) - 180;
 
-            if (Math.abs(delta) < 3) return;
+            if (Math.abs(delta) < 2) return; // ignore minor adjustments
 
             lastHeading = corrected;
         }
-        // --- APPLY ROTATION ---
-        debug(`[map] setting heading`);
-        map.setBearing(heading); // TODO: type
+
+        debug(`[map] setting bearing ${corrected}`);
+        map.setBearing(corrected);
     });
 
     locationTracker.addListener(({ latitude, longitude }) => {
