@@ -3,7 +3,7 @@ import L, { Layer, TileLayer, type MapOptions } from "leaflet";
 import { poiMarker } from "./components/poi-marker";
 import { POITracker } from "../points";
 import { debug } from "../utils";
-import { LocationTracker } from "../location";
+import type { LocationController } from "../location/location-controller";
 
 type MapConfiguration = {
     initialLocation: [number, number];
@@ -23,7 +23,7 @@ type MapParameters = {
     config: MapConfiguration;
     providers: {
         poiTracker: POITracker;
-        locationTracker: LocationTracker;
+        locationController: LocationController;
     };
     additionalLayers?: Layer[];
     POIs: Array<POI>;
@@ -31,7 +31,7 @@ type MapParameters = {
 
 export const initMap = (params: MapParameters) => {
     const { config } = params;
-    const { poiTracker, locationTracker } = params.providers;
+    const { poiTracker, locationController } = params.providers;
 
     const map = L.map("map", config.mapOptions).setView(
         config.initialLocation,
@@ -49,7 +49,7 @@ export const initMap = (params: MapParameters) => {
     params.additionalLayers?.forEach((layer) => map.addLayer(layer));
 
     // Force a redraw of the accuracy circle during map movements (especially iOS pinch-zoom).
-    map.on("move", locationTracker.zoomAnimationCallback);
+    map.on("move", locationController.zoomAnimationCallback);
 
     // add UI widget for holding onto layers
     if (config.tileLayers /* TODO: && buildFlag === "debug" */) {

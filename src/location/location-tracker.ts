@@ -1,16 +1,14 @@
-import L from "leaflet";
 import { debug, info } from "../utils";
-import { locationStoreInstance } from "./location-store";
 import type { LocationPoint } from "./types";
+import { Observable } from "../observable";
 
-type Listener = (point: LocationPoint) => void;
-
-export class LocationTracker {
+export class LocationTracker extends Observable<LocationPoint> {
     /**
      * Initialize position tracker and EventListener
      */
     constructor() {
         // TODO: move this out
+        super();
         this.start();
 
         document.addEventListener(
@@ -20,23 +18,6 @@ export class LocationTracker {
 
         // Initialize map elements
         // TODO: map elements in this class feels like tight coupling
-        const storedPoints = locationStoreInstance
-            .getAll()
-            .map(({ latitude, longitude }) => L.latLng(latitude, longitude));
-
-        this.pathLine = L.polyline(storedPoints, {
-            color: "blue",
-            weight: 4,
-            smoothFactor: 1.5,
-        });
-
-        this.layer = L.layerGroup([
-            this.pathLine, // this one exists immediately
-        ]);
-    }
-
-    public subscribe(listener: Listener) {
-        this.listeners.add(listener);
     }
 
     /**
@@ -58,11 +39,6 @@ export class LocationTracker {
         );
 
         debug(`[LocationTracker] watch started: ${this.watchId}`);
-
-        document.addEventListener(
-            "visibilitychange",
-            this.handleVisibilityChange,
-        );
     };
 
     /**
@@ -73,31 +49,11 @@ export class LocationTracker {
             navigator.geolocation.clearWatch(this.watchId);
             this.watchId = undefined;
         }
-
-        document.removeEventListener(
-            "visibilitychange",
-            this.handleVisibilityChange,
-        );
-    };
-
-    /**
-     * Manually redraw the location circle during map movements.
-     *
-     * Intended to work around iOS pinch-zoom quirks by forcing a vector
-     * redraw instead of changing radius/latlng.
-     */
-    public zoomAnimationCallback = (): void => {
-        if (this.locationMarker) {
-            this.locationMarker.redraw();
-        }
-        // this could be very expensive
-        this.pathLine.redraw();
     };
 
     private handleVisibilityChange = () => {
+        debug("[LocationTracker] handleVisibilityChange");
         if (document.hidden) {
-            // TODO: subscribe and move elsewhere?
-            locationStoreInstance.saveToStorage();
             this.stop();
         } else {
             this.start();
@@ -107,36 +63,12 @@ export class LocationTracker {
     private handlePosition = (position: GeolocationPosition) => {
         const { latitude, longitude, accuracy } = position.coords;
 
-        this.pathLine.addLatLng([latitude, longitude]);
-
-        if (!this.locationMarker) {
-            // TODO: move to  location-layer
-            debug("adding locationMarker", position.coords);
-            this.locationMarker = L.circle([latitude, longitude], {
-                radius: accuracy, // meters
-                color: "#1e90ff",
-                weight: 1,
-                fillColor: "#1e90ff",
-                fillOpacity: 0.15,
-            });
-            this.layer.addLayer(this.locationMarker);
-        } else {
-            this.locationMarker.setLatLng([latitude, longitude]);
-            this.locationMarker.setRadius(accuracy);
-        }
-
-        const point = {
+        this.notify({
             latitude,
             longitude,
             accuracy,
             timestamp: Date.now(),
-        };
-
-        locationStoreInstance.maybeAdd(point);
-
-        for (const listener of this.listeners) {
-            listener(point);
-        }
+        });
     };
 
     private handleError = (error: GeolocationPositionError) => {
@@ -160,8 +92,4 @@ export class LocationTracker {
     };
 
     private watchId: number | undefined;
-    private pathLine: L.Polyline;
-    private locationMarker: L.Circle | undefined;
-    public layer: L.LayerGroup;
-    private listeners = new Set<Listener>();
 }

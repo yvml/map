@@ -1,27 +1,35 @@
 import { LocalStorageProvider, StorageKeys } from "../storage";
 import { debug } from "../utils";
-import L from "leaflet";
+import L, { LatLng } from "leaflet";
 import type { LocationPoint } from "./types";
+import type { LocationTracker } from "./location-tracker";
 
-class LocationStore {
-    constructor() {
+type LocationStoreParams = {
+    locationTracker: LocationTracker;
+};
+
+export class LocationStore {
+    constructor({ locationTracker }: LocationStoreParams) {
         this.data = LocationStore.readFromStorage() ?? [];
         this.previousDataLength = this.data.length;
+
+        locationTracker.addListener(this.handleNewLocation);
     }
-    /**
-     * Only add if the distance between two points is great enough
-     */
-    maybeAdd = (point: LocationPoint) => {
+
+    private handleNewLocation = (point: LocationPoint) => {
+        /**
+         * Only add if the distance between two points is great enough
+         */
         const previousPoint = this.data[this.data.length - 1];
 
         if (previousPoint) {
-            let current = L.latLng(point.latitude, point.longitude);
-            let previous = L.latLng(
+            const current = L.latLng(point.latitude, point.longitude);
+            const previous = L.latLng(
                 previousPoint?.latitude,
                 previousPoint?.longitude,
             );
 
-            let distanceInMeters = current.distanceTo(previous);
+            const distanceInMeters = current.distanceTo(previous);
 
             debug(
                 `[LocationStore] distance between ${current} and ${previous} = ${distanceInMeters}`,
@@ -42,6 +50,12 @@ class LocationStore {
     getAll = (): Array<LocationPoint> => {
         debug(`[LocationStore]: getAll: ${this.data}`);
         return this.data;
+    };
+    getAllLatLng = (): Array<LatLng> => {
+        debug(`[LocationStore]: getAllLatLng: ${this.data}`);
+        return this.getAll().map(({ latitude, longitude }) =>
+            L.latLng(latitude, longitude),
+        );
     };
 
     saveToStorage = () => {
@@ -73,5 +87,3 @@ class LocationStore {
     private data: Array<LocationPoint> = [];
     private previousDataLength: number;
 }
-
-export const locationStoreInstance = new LocationStore();

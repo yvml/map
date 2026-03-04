@@ -31,7 +31,7 @@ const svgLabel = () =>
 </svg>
 `;
 
-const poiToLabel = (poi: POI) => {
+export const poiToLabel = (poi: POI) => {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgLabel(), "image/svg+xml");
 
