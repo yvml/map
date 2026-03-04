@@ -27,6 +27,7 @@ export class LocationController {
         longitude,
         accuracy,
     }: LocationPoint) {
+        debug("[LocationController] new location added");
         this.pathLine.addLatLng([latitude, longitude]);
 
         // TODO: compass
@@ -42,6 +43,7 @@ export class LocationController {
             });
             this.layer.addLayer(this.locationMarker);
         } else {
+            debug("[LocationController] updating existing locationMarker");
             this.locationMarker.setLatLng([latitude, longitude]);
             this.locationMarker.setRadius(accuracy);
         }
