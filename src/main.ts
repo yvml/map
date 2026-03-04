@@ -13,9 +13,12 @@ import { initFeatureFlagProvider } from "./feature-flags";
 
 import "./styles.css"; // TODO: remove tailwind and import normally
 
-import "leaflet-rotate";
+import "leaflet-rotate"; // allows map rotation
 
-import "leaflet.offline"; // temp
+import "leaflet.offline"; // TODO: remove
+
+import "leaflet-edgebuffer"; // prevents tile flashing
+
 import { debug } from "./utils";
 import { LocationController } from "./location/location-controller";
 
@@ -66,6 +69,7 @@ initMap({
             zoomAnimation: true,
             markerZoomAnimation: true,
             preferCanvas: true,
+            edgeBufferTiles: 4,
         },
     },
     // TODO: baseclass for exposing a layer?

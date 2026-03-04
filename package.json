@@ -32,6 +32,7 @@
     },
     "dependencies": {
         "leaflet": "^1.9.4",
+        "leaflet-edgebuffer": "^1.0.7",
         "leaflet-rotate": "^0.2.8",
         "leaflet.offline": "^3.2.1"
     }
