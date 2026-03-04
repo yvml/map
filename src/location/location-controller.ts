@@ -23,7 +23,7 @@ export class LocationController {
             weight: 20,
             smoothFactor: 2,
             opacity: 0.5,
-            dashArray: "15 60", // dash length, gap length (in pixels)
+            dashArray: "20 40", // dash length, gap length (in pixels)
         });
 
         this.layer = L.layerGroup([
