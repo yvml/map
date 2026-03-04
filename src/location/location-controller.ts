@@ -1,6 +1,6 @@
 import { debug } from "../utils";
 import type { LocationTracker } from "./location-tracker";
-import type { OrientationTracker } from "./orientation-tracker";
+import type { OrientationTracker, OrientationData } from "./orientation-tracker";
 import type { LocationPoint } from "./types";
 import L, { LatLng } from "leaflet";
 
@@ -55,6 +55,11 @@ export class LocationController {
         }
     };
 
+    private handleNewOrientation = ({ heading }: OrientationData) => {
+        debug("[LocationController] new orientation heading received", heading);
+        this.heading = heading;
+    };
+
     /**
      * Manually redraw the location circle during map movements.
      *
@@ -71,5 +76,6 @@ export class LocationController {
 
     private pathLine: L.Polyline;
     private locationMarker: L.Circle | undefined;
+    private heading: number | undefined;
     public layer: L.LayerGroup;
 }

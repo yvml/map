@@ -1,4 +1,4 @@
-import { Observable } from "../observable";
+import { Observable } from "../observable/observable";
 import { debug, warn } from "../utils";
 
 export type OrientationData = {
@@ -12,6 +12,16 @@ export class OrientationTracker extends Observable<OrientationData> {
 
     public requestOrientationPermission = async (): Promise<boolean> => {
         try {
+            if (
+                typeof window === "undefined" ||
+                typeof DeviceOrientationEvent === "undefined"
+            ) {
+                warn(
+                    "[OrientationTracker] DeviceOrientationEvent not supported in this environment",
+                );
+                return false;
+            }
+
             // iOS 13+ requires explicit permission
             if (
                 "requestPermission" in DeviceOrientationEvent &&
@@ -26,7 +36,7 @@ export class OrientationTracker extends Observable<OrientationData> {
                     }
                     return false;
                 } catch (error) {
-                    console.error("Orientation permission error:", error);
+                    warn("[OrientationTracker] permission error", error);
                     return false;
                 }
             } else {
@@ -34,34 +44,49 @@ export class OrientationTracker extends Observable<OrientationData> {
                 return true;
             }
         } catch (e) {
-            warn(e);
+            warn("[OrientationTracker] unexpected error", e);
             return false;
         }
     };
 
     private startOrientationTracking = () => {
-        if ("ondeviceorientationabsolute" in window) {
-            /**
-             * neweer android devices/chrome will return a north aligned alpha on this event
-             */
+        // not in the standard lib
+        if ("ondeviceorientationabsolute" in (window as object)) {
+            debug(`[OrientationTracker] listening on absolute`);
             window.addEventListener(
                 "deviceorientationabsolute",
                 this.orientationListener,
                 true,
             );
-        }
-        if ("ondeviceorientation" in window) {
-            /**
-             * iOS will return a non-standard `webkitCompassHeading` on this event which is north aligned
-             */
+        } else if ("ondeviceorientation" in window) {
+            debug(`[OrientationTracker] listening on orientation`);
             window.addEventListener(
                 "deviceorientation",
                 this.orientationListener,
                 true,
             );
         } else {
-            throw new Error(
-                "orientation tracking not supported on this browser",
+            debug("[OrientationTracker] fellthrough");
+        }
+    };
+
+    public stopOrientationTracking = () => {
+        if (typeof window === "undefined") {
+            return;
+        }
+
+        if ("ondeviceorientationabsolute" in window) {
+            window.removeEventListener(
+                "deviceorientationabsolute",
+                this.orientationListener,
+                true,
+            );
+        }
+        if ("ondeviceorientation" in window) {
+            window.removeEventListener(
+                "deviceorientation",
+                this.orientationListener,
+                true,
             );
         }
     };
@@ -72,23 +97,17 @@ export class OrientationTracker extends Observable<OrientationData> {
         webkitCompassHeading,
     }: DeviceOrientationEvent & { webkitCompassHeading?: number }) => {
         if (absolute === true && alpha !== null) {
-            debug(
-                `[OrientationTracker] absolute event, alpha non null, emitting alpha ${alpha}`,
-            );
+            debug(`[OrientationTracker] ${absolute} ${alpha}`);
             this.notify({
                 heading: alpha,
             });
         } else if (webkitCompassHeading !== undefined) {
-            debug(
-                `[OrientationTracker] webkitCompassHeading ${webkitCompassHeading}`,
-            );
+            debug(`[OrientationTracker] ${webkitCompassHeading}`);
             this.notify({
                 heading: webkitCompassHeading,
             });
         } else {
-            warn(
-                `[OrientationTracker] non device heading emitted, not notifying ${alpha} ${absolute} ${webkitCompassHeading}`,
-            );
+            debug("[OrientationTracker] emitting nothing, invalid data");
         }
     };
 }

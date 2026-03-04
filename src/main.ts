@@ -7,7 +7,7 @@ import {
     POITracker,
 } from "./points";
 import { SettingsMenu } from "./settings";
-import { LocationStore, LocationTracker } from "./location";
+import { LocationStore, LocationTracker, OrientationTracker } from "./location";
 import { ConsoleTracker } from "./console";
 import { initFeatureFlagProvider } from "./feature-flags";
 
@@ -19,7 +19,7 @@ import "leaflet.offline"; // TODO: remove
 
 import "leaflet-edgebuffer"; // prevents tile flashing
 
-import { debug } from "./utils";
+import { debug, info } from "./utils";
 import { LocationController } from "./location/location-controller";
 
 initFeatureFlagProvider();
@@ -29,6 +29,12 @@ new SettingsMenu();
 
 const poiTracker = new POITracker();
 const locationTracker = new LocationTracker();
+const orientationTracker = new OrientationTracker();
+
+// TODO: move this to the location button on the UI
+orientationTracker.requestOrientationPermission().then((result) => {
+    info(`orentation request result`, result);
+});
 
 /**
  * store locations to the database
@@ -40,6 +46,7 @@ const locationStore = new LocationStore({ locationTracker });
  */
 const locationController = new LocationController({
     locationTracker,
+    orientationTracker,
     initialPoints: locationStore.getAllLatLng(),
 });
 
@@ -88,4 +95,8 @@ document.addEventListener("visibilitychange", () => {
     debug("[main] handleVisibilityChange");
     // save location when the user minimizes
     locationStore.saveToStorage();
+});
+
+window.addEventListener("beforeunload", () => {
+    orientationTracker.stopOrientationTracking();
 });
