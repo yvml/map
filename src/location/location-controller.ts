@@ -30,8 +30,6 @@ export class LocationController {
         debug("[LocationController] new location added");
         this.pathLine.addLatLng([latitude, longitude]);
 
-        // TODO: compass
-
         if (!this.locationMarker) {
             debug(`adding locationMarker ${latitude}) ${longitude}`);
             this.locationMarker = L.circle([latitude, longitude], {
