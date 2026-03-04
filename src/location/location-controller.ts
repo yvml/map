@@ -9,8 +9,6 @@ type LocationControllerParams = {
 };
 export class LocationController {
     constructor({ locationTracker, initialPoints }: LocationControllerParams) {
-        locationTracker.addListener(this.handleNewLocation);
-
         this.pathLine = L.polyline(initialPoints ?? [], {
             color: "blue",
             weight: 4,
@@ -20,13 +18,15 @@ export class LocationController {
         this.layer = L.layerGroup([
             this.pathLine, // this one exists immediately
         ]);
+
+        locationTracker.addListener(this.handleNewLocation);
     }
 
-    private handleNewLocation({
+    private handleNewLocation = ({
         latitude,
         longitude,
         accuracy,
-    }: LocationPoint) {
+    }: LocationPoint) => {
         debug("[LocationController] new location added");
         this.pathLine.addLatLng([latitude, longitude]);
 
@@ -47,7 +47,7 @@ export class LocationController {
             this.locationMarker.setLatLng([latitude, longitude]);
             this.locationMarker.setRadius(accuracy);
         }
-    }
+    };
 
     /**
      * Manually redraw the location circle during map movements.
