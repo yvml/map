@@ -51,26 +51,68 @@ export const initMap = (params: MapParameters) => {
     // TODO: maybe these should go elsewhere
 
     let lastHeading: number | undefined;
+    let animationFrame: number | undefined;
 
     orientationTracker.addListener(({ heading }) => {
         const normalized = ((heading % 360) + 360) % 360;
 
         // Invert for map rotation
-        const corrected = (360 - normalized) % 360;
+        const target = (360 - normalized) % 360;
 
         if (lastHeading === undefined) {
-            lastHeading = corrected;
-        } else {
-            let delta = corrected - lastHeading;
-            delta = ((delta + 540) % 360) - 180;
-
-            if (Math.abs(delta) < 2) return; // ignore minor adjustments
-
-            lastHeading = corrected;
+            debug(`[map] initial bearing ${target}`);
+            lastHeading = target;
+            map.setBearing(target);
+            return;
         }
 
-        debug(`[map] setting bearing ${corrected}`);
-        map.setBearing(corrected);
+        // shortest angular delta (-180 → 180)
+        let delta = target - lastHeading;
+        delta = ((delta + 540) % 360) - 180;
+
+        if (Math.abs(delta) < 5) {
+            debug(`[map] ignored jitter delta=${delta.toFixed(2)}`);
+            return;
+        }
+
+        debug(
+            `[map] animating from ${lastHeading.toFixed(1)} → ${target.toFixed(
+                1,
+            )} (delta=${delta.toFixed(1)})`,
+        );
+
+        const start = lastHeading;
+        const end = lastHeading + delta;
+        const duration = 120;
+        const startTime = performance.now();
+
+        if (animationFrame !== undefined) {
+            debug(`[map] cancel previous animation`);
+            cancelAnimationFrame(animationFrame);
+            animationFrame = undefined;
+        }
+
+        const animate = (now: number) => {
+            const t = Math.min((now - startTime) / duration, 1);
+
+            // easeOut cubic
+            const eased = 1 - Math.pow(1 - t, 3);
+
+            const current = start + delta * eased;
+            const wrapped = ((current % 360) + 360) % 360;
+
+            map.setBearing(wrapped);
+
+            if (t < 1) {
+                animationFrame = requestAnimationFrame(animate);
+            } else {
+                lastHeading = ((end % 360) + 360) % 360;
+                animationFrame = undefined;
+                debug(`[map] animation complete at ${lastHeading.toFixed(1)}`);
+            }
+        };
+
+        animationFrame = requestAnimationFrame(animate);
     });
 
     locationTracker.addListener(({ latitude, longitude }) => {
