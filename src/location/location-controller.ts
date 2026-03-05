@@ -5,7 +5,7 @@ import type {
     OrientationData,
 } from "./orientation-tracker";
 import type { LocationPoint } from "./types";
-import L, { latLng, LatLng } from "leaflet";
+import L, { LatLng } from "leaflet";
 
 type LocationControllerParams = {
     locationTracker: LocationTracker;
@@ -28,9 +28,7 @@ export class LocationController {
             //dashArray: "20 40", // dash length, gap length (in pixels)
         });
 
-        this.layer = L.layerGroup([
-            this.pathLine, // this one exists immediately
-        ]);
+        this.layer = L.layerGroup([this.pathLine]);
 
         getElementOrThrow({ id: "locate-button" }).addEventListener(
             "click",

@@ -2,9 +2,9 @@ import { tileLayers } from "./map/layers";
 import { initMap } from "./map/map";
 import L from "leaflet";
 import {
+    POIBoundsController,
     POICollisionController,
     POIController,
-    POIPolygonController,
     POIs,
     POITracker,
 } from "./points";
@@ -55,7 +55,7 @@ const locationController = new LocationController({
 new POIController({ poiTracker });
 
 /**
- * controls collision between live user location and POI polygons
+ * controls collision between live user location and POI bounds
  */
 new POICollisionController({
     POIs,
@@ -64,9 +64,9 @@ new POICollisionController({
 });
 
 /**
- * controlls showing the polygons for POIs
+ * controls showing location bounds for POIs
  */
-const polygonController = new POIPolygonController({ POIs, poiTracker });
+const boundsController = new POIBoundsController({ POIs });
 
 const map = initMap({
     POIs,
@@ -87,7 +87,7 @@ const map = initMap({
         },
     },
     // TODO: baseclass for exposing a layer?
-    additionalLayers: [locationController.layer, polygonController.layer],
+    additionalLayers: [locationController.layer, boundsController.layer],
     providers: {
         poiTracker,
         locationController,

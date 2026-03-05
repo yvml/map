@@ -38,7 +38,7 @@ export const initMap = (params: MapParameters) => {
         config.initialZoom,
     );
 
-    // this conflicts with the polygons. TODO
+    // this conflicts with bounds overlays. TODO
     //.on("click", () => {
     //    // deselect the active POI when the user clicks outside on the map
     //    //poiTracker.deselectActive();

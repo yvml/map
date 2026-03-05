@@ -1,9 +1,9 @@
 import type { FeatureConfig } from "./types";
 
 export const defaultFeatures = {
-    polygons: {
-        name: "polygons",
-        description: "Enable polygon shapes around buildings",
+    locationBounds: {
+        name: "locationBounds",
+        description: "Enable location bounds outlines around POIs",
         value: false,
     },
     console: {

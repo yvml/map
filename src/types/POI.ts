@@ -11,9 +11,4 @@ export type POI = {
     imageName?: string;
     // TODO: non-optional
     audioName?: string;
-
-    polygon: {
-        path: Array<[number, number]>; // [lat, lng] (Leaflet order)
-        options: L.PathOptions;
-    };
 };
