@@ -17,6 +17,19 @@
   display: none;
 }
 
+.location-heading-marker {
+  background: transparent;
+  border: 0;
+}
+
+.location-heading-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  transform: rotate(var(--heading-deg, 0deg));
+  transform-origin: center;
+}
+
 html,
 body {
   margin: 0;
