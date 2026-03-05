@@ -105,10 +105,10 @@ export class OrientationTracker extends Observable<OrientationData> {
         webkitCompassHeading,
     }: DeviceOrientationEvent & { webkitCompassHeading?: number }) => {
         if (absolute === true && alpha !== null) {
-            debug(`[OrientationTracker] ${absolute} ${alpha}`);
+            //debug(`[OrientationTracker] ${absolute} ${alpha}`);
             this.handleRawHeading(alpha);
         } else if (webkitCompassHeading !== undefined) {
-            debug(`[OrientationTracker] ${webkitCompassHeading}`);
+            //debug(`[OrientationTracker] ${webkitCompassHeading}`);
             this.handleRawHeading(webkitCompassHeading);
         } else {
             debug("[OrientationTracker] emitting nothing, invalid data");
