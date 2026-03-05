@@ -8,6 +8,7 @@ import {
     type FeatureConfig,
     type FeatureKey,
 } from "./types";
+import type L from "leaflet";
 
 export class ConfigStore extends Observable<ConfigEvent> {
     constructor(public readonly config: Config) {
@@ -16,6 +17,10 @@ export class ConfigStore extends Observable<ConfigEvent> {
 
     getFeature(key: FeatureKey): FeatureConfig {
         return this.config.features[key];
+    }
+
+    getBounds(): L.LatLngBounds | undefined {
+        return this.config.bounds;
     }
 
     setFeature(key: FeatureKey, value: boolean) {
@@ -31,9 +36,9 @@ export class ConfigStore extends Observable<ConfigEvent> {
         });
     }
 
-    set(key: Exclude<string, "features">, value: unknown) {
-        this.config[key] = value;
-        this.notify({ key, value });
+    setBounds(bounds: L.LatLngBounds) {
+        this.config.bounds = bounds;
+        this.notify({ key: "bounds", value: bounds });
     }
 }
 

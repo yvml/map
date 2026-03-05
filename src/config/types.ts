@@ -1,4 +1,5 @@
 import type { defaultFeatures } from "./default-features";
+import type L from "leaflet";
 
 export type FeatureConfig = {
     name: string;
@@ -11,7 +12,8 @@ export type FeatureKey = keyof FeaturesConfig;
 
 export type Config = {
     features: Record<FeatureKey, FeatureConfig>;
-} & Record<string, unknown>;
+    bounds?: L.LatLngBounds;
+} & Record<Exclude<string, "features" | "bounds">, unknown>;
 
 export type FeatureUpdateEvent = {
     key: "features";
@@ -21,9 +23,14 @@ export type FeatureUpdateEvent = {
     };
 };
 
+export type BoundsUpdateEvent = {
+    key: "bounds";
+    value: L.LatLngBounds;
+};
+
 export type RootUpdateEvent = {
-    key: Exclude<string, "features">;
+    key: Exclude<string, "features" | "bounds">;
     value: unknown;
 };
 
-export type ConfigEvent = FeatureUpdateEvent | RootUpdateEvent;
+export type ConfigEvent = FeatureUpdateEvent | BoundsUpdateEvent | RootUpdateEvent;
