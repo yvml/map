@@ -76,6 +76,13 @@ export class LocationTracker extends Observable<LocationPoint> {
             return;
         }
 
+        if (accuracy > 10) {
+            info(
+                `[LocationTracker] accuracy above 10, not notifying: ${accuracy}`,
+            );
+            return;
+        } // TODO: getConfig().config.minAccuracy)
+
         this.notify({
             latitude,
             longitude,
