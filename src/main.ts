@@ -2,6 +2,7 @@ import { tileLayers } from "./map/layers";
 import { initMap } from "./map/map";
 import L from "leaflet";
 import {
+    POICollisionController,
     POIController,
     POIPolygonController,
     POIs,
@@ -52,6 +53,15 @@ const locationController = new LocationController({
  * controls showing the popup and marking the circles
  */
 new POIController({ poiTracker });
+
+/**
+ * controls collision between live user location and POI polygons
+ */
+new POICollisionController({
+    POIs,
+    locationTracker,
+    poiTracker,
+});
 
 /**
  * controlls showing the polygons for POIs

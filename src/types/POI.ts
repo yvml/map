@@ -7,6 +7,7 @@ export type POI = {
         latitude: number;
         longitude: number;
     };
+    bounds: L.LatLngBounds; // southWest -> northEast
     imageName?: string;
     // TODO: non-optional
     audioName?: string;

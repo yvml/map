@@ -91,6 +91,7 @@ export class LocationTracker extends Observable<LocationPoint> {
         });
     };
 
+    // TODO: notify of stopping
     private handleError = (error: GeolocationPositionError) => {
         switch (error.code) {
             case GeolocationPositionError.PERMISSION_DENIED: {

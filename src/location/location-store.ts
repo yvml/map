@@ -45,9 +45,9 @@ export class LocationStore {
 
             const distanceInMeters = current.distanceTo(previous);
 
-            debug(
-                `[LocationStore] distance between ${current} and ${previous} = ${distanceInMeters}`,
-            );
+            //debug(
+            //    `[LocationStore] distance between ${current} and ${previous} = ${distanceInMeters}`,
+            //);
 
             if (distanceInMeters < 1) {
                 // less than 1 meter
