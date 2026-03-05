@@ -69,7 +69,9 @@ export class POICollisionController {
                 `[POICollisionController] entered ${containingPOI.id}, selecting`,
             );
             this.activeCollisionPOIId = containingPOI.id;
-            this.poiTracker.select(containingPOI);
+            if (!this.poiTracker.hasViewed(containingPOI)) {
+                this.poiTracker.select(containingPOI);
+            }
             return;
         }
 

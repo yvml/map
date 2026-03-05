@@ -28,6 +28,10 @@ export class POITracker extends Observable<POI | undefined> {
         this.activePOI = undefined;
     }
 
+    hasViewed(poi: POI): boolean {
+        return this.viewed.has(poi);
+    }
+
     private activePOI: POI | undefined = undefined;
     private viewed: Set<POI> = new Set();
 }

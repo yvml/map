@@ -90,7 +90,7 @@ export class LocationController {
     };
 
     private handleNewOrientation = ({ heading }: OrientationData) => {
-        debug("[LocationController] new orientation heading received", heading);
+        //debug("[LocationController] new orientation heading received", heading);
         this.latestHeading = heading;
         this.updateHeadingMarker();
     };
