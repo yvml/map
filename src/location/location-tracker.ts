@@ -2,7 +2,7 @@ import { debug, info } from "../utils";
 import type { LocationPoint } from "./types";
 import { Observable } from "../observable";
 import { getConfig } from "../config";
-import { LocationSmoother } from "./location-smoother";
+import L from "leaflet";
 
 /**
  * Produces a single, stabilized location stream for all consumers.
@@ -18,12 +18,6 @@ export class LocationTracker extends Observable<LocationPoint> {
     constructor() {
         // TODO: move this out
         super();
-        this.smoother = new LocationSmoother({
-            tauMs: this.tauMs,
-            maxFrameDeltaMs: this.maxFrameDeltaMs,
-            snapDistanceMeters: this.snapDistanceMeters,
-            largeJumpMeters: this.largeJumpMeters,
-        });
 
         document.addEventListener(
             "visibilitychange",
@@ -66,7 +60,9 @@ export class LocationTracker extends Observable<LocationPoint> {
             this.watchId = undefined;
         }
 
-        this.smoother.reset();
+        this.stopSmoothing();
+        this.targetPoint = undefined;
+        this.currentPoint = undefined;
     };
 
     private handleVisibilityChange = () => {
@@ -80,12 +76,33 @@ export class LocationTracker extends Observable<LocationPoint> {
     };
 
     private handlePosition = (position: GeolocationPosition) => {
+        const { latitude, longitude } = position.coords;
         if (!this.isPositionAllowed(position)) {
             return;
         }
 
         const nextPoint = this.toLocationPoint(position);
-        this.smoother.ingest(nextPoint, this.notify);
+
+        // First valid fix after start: snap immediately.
+        if (!this.targetPoint || !this.currentPoint) {
+            this.snapTo(nextPoint);
+            return;
+        }
+
+        const jumpDistanceMeters = this.distanceMeters(
+            this.targetPoint,
+            nextPoint,
+        );
+
+        this.targetPoint = nextPoint;
+
+        // Large discontinuity (poor GPS/teleport): emit immediate snap.
+        if (jumpDistanceMeters > this.largeJumpMeters) {
+            this.snapTo(nextPoint);
+            return;
+        }
+
+        this.startSmoothing();
     };
 
     // TODO: notify of stopping
@@ -107,6 +124,59 @@ export class LocationTracker extends Observable<LocationPoint> {
                 info(error);
             }
         }
+    };
+
+    private startSmoothing = (): void => {
+        if (this.frameId !== undefined) {
+            return;
+        }
+
+        this.lastFrameTs = undefined;
+        this.frameId = requestAnimationFrame(this.stepSmoothing);
+    };
+
+    private stopSmoothing = (): void => {
+        if (this.frameId !== undefined) {
+            cancelAnimationFrame(this.frameId);
+            this.frameId = undefined;
+        }
+        this.lastFrameTs = undefined;
+    };
+
+    private stepSmoothing = (timestampMs: number): void => {
+        if (!this.targetPoint || !this.currentPoint) {
+            this.stopSmoothing();
+            return;
+        }
+
+        const dtMs =
+            this.lastFrameTs === undefined
+                ? 16
+                : Math.max(0, timestampMs - this.lastFrameTs);
+        this.lastFrameTs = timestampMs;
+
+        // Clamp delta to avoid one-frame catch-up jumps after long frame gaps.
+        const clampedDtMs = Math.min(dtMs, this.maxFrameDeltaMs);
+        const alpha = 1 - Math.exp(-clampedDtMs / this.tauMs);
+
+        this.currentPoint = this.interpolatePoint(
+            this.currentPoint,
+            this.targetPoint,
+            alpha,
+        );
+
+        this.notify(this.currentPoint);
+
+        const remainingDistanceMeters = this.distanceMeters(
+            this.currentPoint,
+            this.targetPoint,
+        );
+        if (remainingDistanceMeters < this.snapDistanceMeters) {
+            this.snapTo(this.targetPoint);
+            return;
+        }
+
+        this.frameId = requestAnimationFrame(this.stepSmoothing);
     };
 
     /**
@@ -152,10 +222,51 @@ export class LocationTracker extends Observable<LocationPoint> {
         };
     };
 
+    /**
+     * Emits an immediate point and resets smoothing state.
+     */
+    private snapTo = (point: LocationPoint): void => {
+        this.targetPoint = point;
+        this.currentPoint = point;
+        this.stopSmoothing();
+        this.notify(point);
+    };
+
+    private interpolatePoint = (
+        current: LocationPoint,
+        target: LocationPoint,
+        alpha: number,
+    ): LocationPoint => {
+        return {
+            latitude:
+                current.latitude + (target.latitude - current.latitude) * alpha,
+            longitude:
+                current.longitude +
+                (target.longitude - current.longitude) * alpha,
+            accuracy:
+                current.accuracy + (target.accuracy - current.accuracy) * alpha,
+            timestamp: Date.now(),
+        };
+    };
+
+    private distanceMeters = (
+        a: Pick<LocationPoint, "latitude" | "longitude">,
+        b: Pick<LocationPoint, "latitude" | "longitude">,
+    ): number => {
+        return L.latLng(a.latitude, a.longitude).distanceTo(
+            L.latLng(b.latitude, b.longitude),
+        );
+    };
+
     private watchId: number | undefined;
-    private smoother: LocationSmoother;
+    private targetPoint: LocationPoint | undefined;
+    private currentPoint: LocationPoint | undefined;
+    // Active animation frame handle used by the smoothing loop.
+    private frameId: number | undefined;
+    // Previous RAF timestamp used to compute frame delta.
+    private lastFrameTs: number | undefined;
     // Exponential smoothing time constant. Higher is smoother/slower.
-    private readonly tauMs = 1200;
+    private readonly tauMs = 800;
     // Caps frame delta used for smoothing to avoid large single-frame jumps.
     private readonly maxFrameDeltaMs = 100;
     // Stop smoothing when converged within this radius.
