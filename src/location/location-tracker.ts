@@ -4,6 +4,13 @@ import { Observable } from "../observable";
 import { getConfig } from "../config";
 import L from "leaflet";
 
+/**
+ * Produces a single, stabilized location stream for all consumers.
+ *
+ * Raw geolocation fixes are validated, then either:
+ * - emitted immediately (first fix / large discontinuity), or
+ * - interpolated with an RAF-based exponential smoothing loop.
+ */
 export class LocationTracker extends Observable<LocationPoint> {
     /**
      * Initialize position tracker and EventListener
@@ -16,9 +23,6 @@ export class LocationTracker extends Observable<LocationPoint> {
             "visibilitychange",
             this.handleVisibilityChange,
         );
-
-        // Initialize map elements
-        // TODO: map elements in this class feels like tight coupling
     }
 
     /**
@@ -67,55 +71,29 @@ export class LocationTracker extends Observable<LocationPoint> {
     };
 
     private handlePosition = (position: GeolocationPosition) => {
-        const { latitude, longitude, accuracy } = position.coords;
-        const bounds = getConfig().getBounds();
-        if (bounds && !bounds.contains([latitude, longitude])) {
-            info(
-                "[LocationTracker] location outside bounds, stopping tracking",
-                {
-                    latitude,
-                    longitude,
-                },
-            );
-            this.stop();
+        const { latitude, longitude } = position.coords;
+        if (!this.isPositionAllowed(position)) {
             return;
         }
 
-        if (accuracy > 10) {
-            info(
-                `[LocationTracker] accuracy above 10, not notifying: ${accuracy}`,
-            );
-            return;
-        } // TODO: getConfig().config.minAccuracy)
-
-        const nextPoint: LocationPoint = {
-            latitude,
-            longitude,
-            accuracy,
-            timestamp: Date.now(),
-        };
+        const nextPoint = this.toLocationPoint(position);
 
         // First valid fix after start: snap immediately.
         if (!this.targetPoint || !this.currentPoint) {
-            this.targetPoint = nextPoint;
-            this.currentPoint = nextPoint;
-            this.stopSmoothing();
-            this.notify(nextPoint);
+            this.snapTo(nextPoint);
             return;
         }
 
-        const jumpDistanceMeters = L.latLng(
-            this.targetPoint.latitude,
-            this.targetPoint.longitude,
-        ).distanceTo(L.latLng(nextPoint.latitude, nextPoint.longitude));
+        const jumpDistanceMeters = this.distanceMeters(
+            this.targetPoint,
+            nextPoint,
+        );
 
         this.targetPoint = nextPoint;
 
         // Large discontinuity (poor GPS/teleport): emit immediate snap.
         if (jumpDistanceMeters > this.largeJumpMeters) {
-            this.currentPoint = nextPoint;
-            this.stopSmoothing();
-            this.notify(nextPoint);
+            this.snapTo(nextPoint);
             return;
         }
 
@@ -174,50 +152,118 @@ export class LocationTracker extends Observable<LocationPoint> {
 
         const alpha = 1 - Math.exp(-dtMs / this.tauMs);
 
-        const latitude =
-            this.currentPoint.latitude +
-            (this.targetPoint.latitude - this.currentPoint.latitude) * alpha;
-        const longitude =
-            this.currentPoint.longitude +
-            (this.targetPoint.longitude - this.currentPoint.longitude) * alpha;
-        const accuracy =
-            this.currentPoint.accuracy +
-            (this.targetPoint.accuracy - this.currentPoint.accuracy) * alpha;
-
-        this.currentPoint = {
-            latitude,
-            longitude,
-            accuracy,
-            timestamp: Date.now(),
-        };
+        this.currentPoint = this.interpolatePoint(
+            this.currentPoint,
+            this.targetPoint,
+            alpha,
+        );
 
         this.notify(this.currentPoint);
 
-        const remainingDistanceMeters = L.latLng(
-            this.currentPoint.latitude,
-            this.currentPoint.longitude,
-        ).distanceTo(
-            L.latLng(this.targetPoint.latitude, this.targetPoint.longitude),
+        const remainingDistanceMeters = this.distanceMeters(
+            this.currentPoint,
+            this.targetPoint,
         );
         if (remainingDistanceMeters < this.snapDistanceMeters) {
-            this.currentPoint = {
-                ...this.targetPoint,
-                timestamp: Date.now(),
-            };
-            this.notify(this.currentPoint);
-            this.stopSmoothing();
+            this.snapTo(this.targetPoint);
             return;
         }
 
         this.frameId = requestAnimationFrame(this.stepSmoothing);
     };
 
+    /**
+     * Validates bounds and accuracy requirements for incoming geolocation fixes.
+     */
+    private isPositionAllowed = (position: GeolocationPosition): boolean => {
+        const { latitude, longitude, accuracy } = position.coords;
+        const bounds = getConfig().getBounds();
+        if (bounds && !bounds.contains([latitude, longitude])) {
+            info(
+                "[LocationTracker] location outside bounds, stopping tracking",
+                {
+                    latitude,
+                    longitude,
+                },
+            );
+            this.stop();
+            return false;
+        }
+
+        if (accuracy > this.maxAccuracyMeters) {
+            info(
+                `[LocationTracker] accuracy above ${this.maxAccuracyMeters}, not notifying: ${accuracy}`,
+            );
+            return false;
+        }
+
+        return true;
+    };
+
+    /**
+     * Converts browser geolocation payload to the app-level location event.
+     */
+    private toLocationPoint = (
+        position: GeolocationPosition,
+    ): LocationPoint => {
+        const { latitude, longitude, accuracy } = position.coords;
+        return {
+            latitude,
+            longitude,
+            accuracy,
+            timestamp: Date.now(),
+        };
+    };
+
+    /**
+     * Emits an immediate point and resets smoothing state.
+     */
+    private snapTo = (point: LocationPoint): void => {
+        this.targetPoint = point;
+        this.currentPoint = point;
+        this.stopSmoothing();
+        this.notify(point);
+    };
+
+    private interpolatePoint = (
+        current: LocationPoint,
+        target: LocationPoint,
+        alpha: number,
+    ): LocationPoint => {
+        return {
+            latitude:
+                current.latitude + (target.latitude - current.latitude) * alpha,
+            longitude:
+                current.longitude +
+                (target.longitude - current.longitude) * alpha,
+            accuracy:
+                current.accuracy + (target.accuracy - current.accuracy) * alpha,
+            timestamp: Date.now(),
+        };
+    };
+
+    private distanceMeters = (
+        a: Pick<LocationPoint, "latitude" | "longitude">,
+        b: Pick<LocationPoint, "latitude" | "longitude">,
+    ): number => {
+        return L.latLng(a.latitude, a.longitude).distanceTo(
+            L.latLng(b.latitude, b.longitude),
+        );
+    };
+
     private watchId: number | undefined;
     private targetPoint: LocationPoint | undefined;
     private currentPoint: LocationPoint | undefined;
+    // Active animation frame handle used by the smoothing loop.
     private frameId: number | undefined;
+    // Previous RAF timestamp used to compute frame delta.
     private lastFrameTs: number | undefined;
+    // Exponential smoothing time constant.
     private readonly tauMs = 450;
+    // Stop smoothing when converged within this radius.
     private readonly snapDistanceMeters = 0.5;
+    // Snap immediately for large discontinuities.
     private readonly largeJumpMeters = 25;
+    // Ignore points above this reported accuracy.
+    private readonly maxAccuracyMeters = 10;
 }

@@ -69,6 +69,8 @@ export class POICollisionController {
                 `[POICollisionController] entered ${containingPOI.id}, selecting`,
             );
             this.activeCollisionPOIId = containingPOI.id;
+
+            // only show if the user hasn't seen this POI before.
             if (!this.poiTracker.hasViewed(containingPOI)) {
                 this.poiTracker.select(containingPOI);
             }
