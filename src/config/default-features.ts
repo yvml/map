@@ -1,15 +1,15 @@
-import type { FeatureFlagType } from "./types";
+import type { FeatureConfig } from "./types";
 
-export const deafaultFeatureFlags = {
-    polygons: {
-        name: "polygons",
-        description: "Enable polygon shapes around buildings",
-        value: false,
+export const defaultFeatures = {
+    locationBounds: {
+        name: "locationBounds",
+        description: "Enable location bounds outlines around POIs",
+        value: true,
     },
     console: {
         name: "console",
         description: "Enable debug console",
-        value: false,
+        value: true,
     },
     locationFollowAndRotate: {
         name: "locationFollowAndRotate",
@@ -17,4 +17,4 @@ export const deafaultFeatureFlags = {
             "Follow user location and rotate map by orientation (disable to keep map static while dot/cone still move)",
         value: true,
     },
-} as const satisfies Record<string, FeatureFlagType>;
+} as const satisfies Record<string, FeatureConfig>;

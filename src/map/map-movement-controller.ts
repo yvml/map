@@ -1,5 +1,5 @@
 import L from "leaflet";
-import type { FeatureFlagProvider } from "../feature-flags";
+import type { ConfigStore } from "../config";
 import type { LocationTracker, OrientationTracker } from "../location";
 
 type LatLngTuple = [number, number];
@@ -8,7 +8,7 @@ type MapMovementControllerParams = {
     map: L.Map;
     locationTracker: LocationTracker;
     orientationTracker: OrientationTracker;
-    featureFlagProvider: FeatureFlagProvider;
+    configStore: ConfigStore;
 };
 
 export class MapMovementController {
@@ -16,24 +16,29 @@ export class MapMovementController {
         map,
         locationTracker,
         orientationTracker,
-        featureFlagProvider,
+        configStore,
     }: MapMovementControllerParams) {
         this.map = map;
         this.locationTracker = locationTracker;
         this.orientationTracker = orientationTracker;
 
-        if (featureFlagProvider.get("locationFollowAndRotate").value) {
+        if (configStore.getFeature("locationFollowAndRotate").value) {
             this.enable();
         } else {
             this.disable();
         }
 
-        featureFlagProvider.addListener(({ key, value }) => {
+        configStore.addListener((event) => {
+            if (event.key !== "features") {
+                return;
+            }
+
+            const { key, value: isEnabled } = event.value;
             if (key !== "locationFollowAndRotate") {
                 return;
             }
 
-            if (value) {
+            if (isEnabled) {
                 this.enable();
             } else {
                 this.disable();

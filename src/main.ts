@@ -1,15 +1,17 @@
 import { tileLayers } from "./map/layers";
 import { initMap } from "./map/map";
+import L from "leaflet";
 import {
+    POIBoundsController,
+    POICollisionController,
     POIController,
-    POIPolygonController,
     POIs,
     POITracker,
 } from "./points";
 import { SettingsMenu } from "./settings";
 import { LocationStore, LocationTracker, OrientationTracker } from "./location";
 import { ConsoleTracker } from "./console";
-import { getFeatureFlagProviderOrThrow, initFeatureFlagProvider } from "./feature-flags";
+import { getConfig, initConfig } from "./config";
 
 import "./styles.css"; // TODO: remove tailwind and import normally
 
@@ -23,7 +25,8 @@ import { debug } from "./utils";
 import { LocationController } from "./location/location-controller";
 import { MapMovementController } from "./map/map-movement-controller";
 
-initFeatureFlagProvider();
+initConfig();
+const configStore = getConfig();
 
 new ConsoleTracker();
 new SettingsMenu();
@@ -52,9 +55,18 @@ const locationController = new LocationController({
 new POIController({ poiTracker });
 
 /**
- * controlls showing the polygons for POIs
+ * controls collision between live user location and POI bounds
  */
-const polygonController = new POIPolygonController({ POIs, poiTracker });
+new POICollisionController({
+    POIs,
+    locationTracker,
+    poiTracker,
+});
+
+/**
+ * controls showing location bounds for POIs
+ */
+const boundsController = new POIBoundsController({ POIs });
 
 const map = initMap({
     POIs,
@@ -75,7 +87,7 @@ const map = initMap({
         },
     },
     // TODO: baseclass for exposing a layer?
-    additionalLayers: [locationController.layer, polygonController.layer],
+    additionalLayers: [locationController.layer, boundsController.layer],
     providers: {
         poiTracker,
         locationController,
@@ -86,8 +98,19 @@ new MapMovementController({
     map,
     locationTracker,
     orientationTracker,
-    featureFlagProvider: getFeatureFlagProviderOrThrow(),
+    configStore,
 });
+
+const bounds = configStore.getBounds();
+// TODO: temporary -- maybe setBounds
+if (bounds) {
+    L.rectangle(bounds, {
+        color: "#ff3b30",
+        weight: 2,
+        fill: false,
+        interactive: false,
+    }).addTo(map);
+}
 
 setInterval(() => {
     locationStore.saveToStorage();

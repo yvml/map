@@ -1,24 +1,45 @@
-import { getFeatureFlagProviderOrThrow } from "../feature-flags";
+import { getConfig } from "../config";
 import { getElementOrThrow, logger, type LogLevel } from "../utils";
 
 export class ConsoleTracker {
     constructor() {
+        const configStore = getConfig();
         this.consoleElement = getElementOrThrow({ id: "console" });
-        this.unsubscribeFn = logger.subscribe(this.loggerSubscription);
+        this.unsubscribeFn = undefined;
 
-        // TODO:
-        //const showConsole = getFeatureFlagProviderOrThrow().get("console").value;
+        this.handleVisibilityChange(
+            configStore.getFeature("console").value,
+        );
+
+        configStore.addListener((event) => {
+            if (event.key !== "features") {
+                return;
+            }
+
+            const { key, value: showConsole } = event.value;
+            if (key !== "console") {
+                return;
+            }
+
+            this.handleVisibilityChange(showConsole);
+        });
     }
 
-    //private handleVisibilityChange = (show: boolean) => {
-    //  if (show) {
-    //    this.unsubscribeFn();
-    //    logger.subscribe(this.loggerSubscription);
-    //    this.consoleElement.className
+    private handleVisibilityChange = (show: boolean) => {
+        this.consoleElement.classList.toggle("hidden", !show);
 
-    //  }
+        if (show) {
+            if (!this.unsubscribeFn) {
+                this.unsubscribeFn = logger.subscribe(this.loggerSubscription);
+            }
+            return;
+        }
 
-    //}
+        if (this.unsubscribeFn) {
+            this.unsubscribeFn();
+            this.unsubscribeFn = undefined;
+        }
+    };
 
     loggerSubscription = (level: LogLevel, messages: unknown[]) => {
         const line = document.createElement("div");
@@ -29,9 +50,9 @@ export class ConsoleTracker {
         this.consoleElement.appendChild(line);
 
         // Auto-scroll to bottom
-        //this.consoleElement.scrollTop = this.consoleElement.scrollHeight;
+        this.consoleElement.scrollTop = this.consoleElement.scrollHeight;
     };
 
     private consoleElement: HTMLElement;
-    private unsubscribeFn: () => void;
+    private unsubscribeFn: (() => void) | undefined;
 }

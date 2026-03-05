@@ -13,6 +13,8 @@ type LocationControllerParams = {
     initialPoints?: LatLng[];
 };
 export class LocationController {
+    private static readonly headingIconSrc = `${import.meta.env.BASE_URL}icons/location-arrow.svg`;
+
     constructor({
         locationTracker,
         orientationTracker,
@@ -26,9 +28,7 @@ export class LocationController {
             //dashArray: "20 40", // dash length, gap length (in pixels)
         });
 
-        this.layer = L.layerGroup([
-            this.pathLine, // this one exists immediately
-        ]);
+        this.layer = L.layerGroup([this.pathLine]);
 
         getElementOrThrow({ id: "locate-button" }).addEventListener(
             "click",
@@ -60,8 +60,18 @@ export class LocationController {
     }: LocationPoint) => {
         debug("[LocationController] new location added");
         this.pathLine.addLatLng([latitude, longitude]);
-        this.latestLocation = L.latLng(latitude, longitude);
 
+        this.updateLocationMarker({ latitude, longitude, accuracy });
+
+        this.updateHeadingMarker();
+    };
+
+    private updateLocationMarker = ({
+        latitude,
+        longitude,
+        accuracy,
+    }: Pick<LocationPoint, "latitude" | "longitude" | "accuracy">): void => {
+        this.latestLocation = L.latLng(latitude, longitude);
         if (!this.locationMarker) {
             debug(`adding locationMarker ${latitude}) ${longitude}`);
             this.locationMarker = L.circle(this.latestLocation, {
@@ -77,127 +87,46 @@ export class LocationController {
             this.locationMarker.setLatLng(this.latestLocation);
             this.locationMarker.setRadius(accuracy);
         }
-
-        this.updateOrientationCone();
     };
 
     private handleNewOrientation = ({ heading }: OrientationData) => {
         debug("[LocationController] new orientation heading received", heading);
         this.latestHeading = heading;
-        this.updateOrientationCone();
+        this.updateHeadingMarker();
     };
 
     /**
-     * Creates or updates the directional cone once both location and heading
+     * Creates or updates the heading icon once both location and heading
      * are available.
      */
-    private updateOrientationCone = (): void => {
+    private updateHeadingMarker = (): void => {
         if (!this.latestLocation || this.latestHeading === undefined) {
             return;
         }
 
-        const points = this.buildConePolygon({
-            center: this.latestLocation,
-            heading: this.latestHeading,
-            radiusMeters: 5,
-            spreadDegrees: 90,
-            arcSegments: 12,
-        });
-
-        if (!this.orientationCone) {
-            this.orientationCone = L.polygon(points, {
-                color: "#1e90ff",
-                weight: 1,
-                fillColor: "#1e90ff",
-                fillOpacity: 0.25,
+        if (!this.headingMarker) {
+            this.headingMarker = L.marker(this.latestLocation, {
+                icon: L.divIcon({
+                    className: "location-heading-marker",
+                    // TODO: explore not using raw html here
+                    html: `<img src="${LocationController.headingIconSrc}" alt="" aria-hidden="true" class="location-heading-icon" />`,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12],
+                }),
                 interactive: false,
             });
-            this.layer.addLayer(this.orientationCone);
-            return;
+            this.layer.addLayer(this.headingMarker);
+        } else {
+            this.headingMarker.setLatLng(this.latestLocation);
         }
 
-        this.orientationCone.setLatLngs(points);
-    };
-
-    private buildConePolygon = ({
-        center,
-        heading,
-        radiusMeters,
-        spreadDegrees,
-        arcSegments,
-    }: {
-        center: LatLng;
-        heading: number;
-        radiusMeters: number;
-        spreadDegrees: number;
-        arcSegments: number;
-    }): Array<LatLng> => {
-        // Start at the cone's left edge based on current heading.
-        const startBearing = heading - spreadDegrees / 2;
-        // Include center first so the polygon is anchored at user position.
-        const points: Array<LatLng> = [center];
-
-        // Sample points across the arc from left edge to right edge.
-        for (let segment = 0; segment <= arcSegments; segment += 1) {
-            const bearing =
-                startBearing + (spreadDegrees * segment) / arcSegments;
-            points.push(
-                this.destinationPoint({
-                    center,
-                    bearingDegrees: bearing,
-                    distanceMeters: radiusMeters,
-                }),
+        const markerElement = this.headingMarker.getElement();
+        if (markerElement) {
+            markerElement.style.setProperty(
+                "--heading-deg",
+                `${this.latestHeading}deg`,
             );
         }
-
-        // Close the shape back to center to form a cone/sector polygon.
-        points.push(center);
-        return points;
-    };
-
-    private destinationPoint = ({
-        center,
-        bearingDegrees,
-        distanceMeters,
-    }: {
-        center: LatLng;
-        bearingDegrees: number;
-        distanceMeters: number;
-    }): LatLng => {
-        const EARTH_RADIUS_METERS = 6371000;
-        const toRadians = Math.PI / 180;
-        const toDegrees = 180 / Math.PI;
-
-        // Convert input coordinates and bearing to radians.
-        const latitude = center.lat * toRadians;
-        const longitude = center.lng * toRadians;
-        const bearing = bearingDegrees * toRadians;
-        const angularDistance = distanceMeters / EARTH_RADIUS_METERS;
-
-        // Solve next latitude on a sphere for the given bearing + distance.
-        const nextLatitude = Math.asin(
-            Math.sin(latitude) * Math.cos(angularDistance) +
-                Math.cos(latitude) *
-                    Math.sin(angularDistance) *
-                    Math.cos(bearing),
-        );
-
-        // Solve next longitude paired with the computed latitude.
-        const nextLongitude =
-            longitude +
-            Math.atan2(
-                Math.sin(bearing) *
-                    Math.sin(angularDistance) *
-                    Math.cos(latitude),
-                Math.cos(angularDistance) -
-                    Math.sin(latitude) * Math.sin(nextLatitude),
-            );
-
-        // Convert back to degrees and normalize longitude into [-180, 180].
-        return L.latLng(
-            nextLatitude * toDegrees,
-            ((nextLongitude * toDegrees + 540) % 360) - 180,
-        );
     };
 
     /**
@@ -210,16 +139,13 @@ export class LocationController {
         if (this.locationMarker) {
             this.locationMarker.redraw();
         }
-        if (this.orientationCone) {
-            this.orientationCone.redraw();
-        }
         // TODO: this could be very expensive
         this.pathLine.redraw();
     };
 
     private pathLine: L.Polyline;
     private locationMarker: L.Circle | undefined;
-    private orientationCone: L.Polygon | undefined;
+    private headingMarker: L.Marker | undefined;
     private latestHeading: number | undefined;
     private latestLocation: LatLng | undefined;
     public layer: L.LayerGroup;

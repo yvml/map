@@ -1,9 +1,6 @@
 import { LocalStorageProvider } from "../storage";
 import { getElementOrThrow } from "../utils";
-import {
-    getFeatureFlagProviderOrThrow,
-    type FeatureFlagKey,
-} from "../feature-flags";
+import { getConfig, type FeatureKey } from "../config";
 
 export class SettingsMenu {
     constructor() {
@@ -30,16 +27,16 @@ export class SettingsMenu {
             LocalStorageProvider.clear();
         });
 
-        const featureFlagProvider = getFeatureFlagProviderOrThrow();
+        const configStore = getConfig();
 
         // TODO: remove partial and use .map
-        const checkboxByKey: Partial<Record<FeatureFlagKey, HTMLInputElement>> =
+        const checkboxByKey: Partial<Record<FeatureKey, HTMLInputElement>> =
             {};
 
-        Object.entries(featureFlagProvider.featureFlags).forEach(
-            ([key, featureFlag]) => {
+        Object.entries(configStore.config.features).forEach(
+            ([key, feature]) => {
                 // TODO: dont like this cast
-                const typedKey = key as FeatureFlagKey;
+                const typedKey = key as FeatureKey;
 
                 const row = document.createElement("div");
                 row.className = "settings-feature-flag-row";
@@ -47,7 +44,7 @@ export class SettingsMenu {
                 // --- check box
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.checked = featureFlag.value;
+                checkbox.checked = feature.value;
                 checkbox.setAttribute("data-feature-flag-key", typedKey);
 
                 // --- text container
@@ -57,11 +54,11 @@ export class SettingsMenu {
                 // bold(FF Name)
                 // regular(FF description)
                 const nameElement = document.createElement("strong");
-                nameElement.textContent = featureFlag.name;
+                nameElement.textContent = feature.name;
                 textContainer.className = "settings-feature-flag-title-text";
 
                 const descriptionElement = document.createElement("span");
-                descriptionElement.textContent = featureFlag.description;
+                descriptionElement.textContent = feature.description;
                 textContainer.className =
                     "settings-feature-flag-description-text";
 
@@ -76,12 +73,17 @@ export class SettingsMenu {
                 checkboxByKey[typedKey] = checkbox;
 
                 checkbox.addEventListener("change", () => {
-                    featureFlagProvider.set(typedKey, checkbox.checked);
+                    configStore.setFeature(typedKey, checkbox.checked);
                 });
             },
         );
 
-        featureFlagProvider.addListener(({ key, value }) => {
+        configStore.addListener((event) => {
+            if (event.key !== "features") {
+                return;
+            }
+
+            const { key, value } = event.value;
             const checkbox = checkboxByKey[key];
             if (checkbox) {
                 checkbox.checked = value;

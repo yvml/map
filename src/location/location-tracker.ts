@@ -1,6 +1,7 @@
 import { debug, info } from "../utils";
 import type { LocationPoint } from "./types";
 import { Observable } from "../observable";
+import { getConfig } from "../config";
 
 export class LocationTracker extends Observable<LocationPoint> {
     /**
@@ -62,6 +63,25 @@ export class LocationTracker extends Observable<LocationPoint> {
 
     private handlePosition = (position: GeolocationPosition) => {
         const { latitude, longitude, accuracy } = position.coords;
+        const bounds = getConfig().getBounds();
+        if (bounds && !bounds.contains([latitude, longitude])) {
+            info(
+                "[LocationTracker] location outside bounds, stopping tracking",
+                {
+                    latitude,
+                    longitude,
+                },
+            );
+            this.stop();
+            return;
+        }
+
+        if (accuracy > 10) {
+            info(
+                `[LocationTracker] accuracy above 10, not notifying: ${accuracy}`,
+            );
+            return;
+        } // TODO: getConfig().config.minAccuracy)
 
         this.notify({
             latitude,
@@ -71,6 +91,7 @@ export class LocationTracker extends Observable<LocationPoint> {
         });
     };
 
+    // TODO: notify of stopping
     private handleError = (error: GeolocationPositionError) => {
         switch (error.code) {
             case GeolocationPositionError.PERMISSION_DENIED: {
