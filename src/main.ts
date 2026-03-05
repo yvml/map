@@ -21,7 +21,7 @@ import "leaflet-edgebuffer"; // prevents tile flashing
 
 import { debug } from "./utils";
 import { LocationController } from "./location/location-controller";
-import { initLocationFollowAndRotate } from "./map/location-follow-and-rotate";
+import { MapMovementController } from "./map/map-movement-controller";
 
 initFeatureFlagProvider();
 
@@ -82,7 +82,7 @@ const map = initMap({
     },
 });
 
-initLocationFollowAndRotate({
+new MapMovementController({
     map,
     locationTracker,
     orientationTracker,
