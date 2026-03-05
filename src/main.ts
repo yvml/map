@@ -9,7 +9,7 @@ import {
 import { SettingsMenu } from "./settings";
 import { LocationStore, LocationTracker, OrientationTracker } from "./location";
 import { ConsoleTracker } from "./console";
-import { initFeatureFlagProvider } from "./feature-flags";
+import { getFeatureFlagProviderOrThrow, initFeatureFlagProvider } from "./feature-flags";
 
 import "./styles.css"; // TODO: remove tailwind and import normally
 
@@ -21,6 +21,7 @@ import "leaflet-edgebuffer"; // prevents tile flashing
 
 import { debug } from "./utils";
 import { LocationController } from "./location/location-controller";
+import { initLocationFollowAndRotate } from "./map/location-follow-and-rotate";
 
 initFeatureFlagProvider();
 
@@ -55,7 +56,7 @@ new POIController({ poiTracker });
  */
 const polygonController = new POIPolygonController({ POIs, poiTracker });
 
-initMap({
+const map = initMap({
     POIs,
     config: {
         initialLocation: [34.181922, -116.414579],
@@ -77,10 +78,15 @@ initMap({
     additionalLayers: [locationController.layer, polygonController.layer],
     providers: {
         poiTracker,
-        locationTracker,
-        orientationTracker,
         locationController,
     },
+});
+
+initLocationFollowAndRotate({
+    map,
+    locationTracker,
+    orientationTracker,
+    featureFlagProvider: getFeatureFlagProviderOrThrow(),
 });
 
 setInterval(() => {

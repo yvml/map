@@ -4,9 +4,6 @@ import { poiMarker } from "./components/poi-marker";
 import { POITracker } from "../points";
 import { debug } from "../utils";
 import type { LocationController } from "../location/location-controller";
-import type { LocationTracker, OrientationTracker } from "../location";
-import { rotateMap } from "./rotate-map";
-import { getFeatureFlagProviderOrThrow } from "../feature-flags";
 
 type MapConfiguration = {
     initialLocation: [number, number];
@@ -26,10 +23,6 @@ type MapParameters = {
     config: MapConfiguration;
     providers: {
         poiTracker: POITracker;
-
-        orientationTracker: OrientationTracker;
-        locationTracker: LocationTracker;
-
         locationController: LocationController;
     };
     additionalLayers?: Layer[];
@@ -38,70 +31,12 @@ type MapParameters = {
 
 export const initMap = (params: MapParameters) => {
     const { config } = params;
-    const {
-        poiTracker,
-        locationController,
-        orientationTracker,
-        locationTracker,
-    } = params.providers;
+    const { poiTracker, locationController } = params.providers;
 
     const map = L.map("map", config.mapOptions).setView(
         config.initialLocation,
         config.initialZoom,
     );
-
-    let unsubscribeLocationFollow: (() => void) | undefined;
-    let unsubscribeRotation: (() => void) | undefined;
-
-    const enableFollowAndRotate = () => {
-        if (!unsubscribeLocationFollow) {
-            unsubscribeLocationFollow = locationTracker.addListener(
-                ({ latitude, longitude }) => {
-                    // TODO: only if the location is within the bounds -- or should that happen higher up?
-                    map.setView([latitude, longitude], map.getZoom(), {
-                        animate: true,
-                    });
-                },
-            );
-        }
-
-        if (!unsubscribeRotation) {
-            unsubscribeRotation = rotateMap({
-                orientationTracker,
-                setBearing: (bearing) => map.setBearing(bearing),
-            });
-        }
-    };
-
-    const disableFollowAndRotate = () => {
-        if (unsubscribeLocationFollow) {
-            unsubscribeLocationFollow();
-            unsubscribeLocationFollow = undefined;
-        }
-        if (unsubscribeRotation) {
-            unsubscribeRotation();
-            unsubscribeRotation = undefined;
-        }
-    };
-
-    const featureFlagProvider = getFeatureFlagProviderOrThrow();
-    if (featureFlagProvider.get("locationFollowAndRotate").value) {
-        enableFollowAndRotate();
-    } else {
-        disableFollowAndRotate();
-    }
-
-    featureFlagProvider.addListener(({ key, value }) => {
-        if (key !== "locationFollowAndRotate") {
-            return;
-        }
-
-        if (value) {
-            enableFollowAndRotate();
-        } else {
-            disableFollowAndRotate();
-        }
-    });
 
     // this conflicts with the polygons. TODO
     //.on("click", () => {
@@ -156,4 +91,6 @@ export const initMap = (params: MapParameters) => {
     };
     setTimeout(delayedFix, 400);
     setTimeout(delayedFix, 1200);
+
+    return map;
 };

@@ -99,7 +99,7 @@ export class LocationController {
         const points = this.buildConePolygon({
             center: this.latestLocation,
             heading: this.latestHeading,
-            radiusMeters: 25,
+            radiusMeters: 5,
             spreadDegrees: 90,
             arcSegments: 12,
         });
