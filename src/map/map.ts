@@ -4,8 +4,6 @@ import { poiMarker } from "./components/poi-marker";
 import { POITracker } from "../points";
 import { debug } from "../utils";
 import type { LocationController } from "../location/location-controller";
-import type { LocationTracker, OrientationTracker } from "../location";
-import { rotateMap } from "./rotate-map";
 
 type MapConfiguration = {
     initialLocation: [number, number];
@@ -25,10 +23,6 @@ type MapParameters = {
     config: MapConfiguration;
     providers: {
         poiTracker: POITracker;
-
-        orientationTracker: OrientationTracker;
-        locationTracker: LocationTracker;
-
         locationController: LocationController;
     };
     additionalLayers?: Layer[];
@@ -37,29 +31,13 @@ type MapParameters = {
 
 export const initMap = (params: MapParameters) => {
     const { config } = params;
-    const {
-        poiTracker,
-        locationController,
-        orientationTracker,
-        locationTracker,
-    } = params.providers;
+    const { poiTracker, locationController } = params.providers;
 
     const map = L.map("map", config.mapOptions).setView(
         config.initialLocation,
         config.initialZoom,
     );
 
-    rotateMap({
-        orientationTracker,
-        setBearing: (bearing) => map.setBearing(bearing),
-    });
-
-    locationTracker.addListener(({ latitude, longitude }) => {
-        // TODO: only if the location is within the bounds -- or should that happen higher up?
-        map.setView([latitude, longitude], map.getZoom(), {
-            animate: true,
-        });
-    });
     // this conflicts with the polygons. TODO
     //.on("click", () => {
     //    // deselect the active POI when the user clicks outside on the map
@@ -113,4 +91,6 @@ export const initMap = (params: MapParameters) => {
     };
     setTimeout(delayedFix, 400);
     setTimeout(delayedFix, 1200);
+
+    return map;
 };
