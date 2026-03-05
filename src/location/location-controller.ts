@@ -37,6 +37,12 @@ export class LocationController {
                     `[LocationController] locate button clicked, begin tracking`,
                 );
 
+                // TODO: this will return a boolean
+                // true: tracking began successfully
+                // false: it didnt (permission denied, out of bounds, bad accuracy)
+                //
+                //on false, show error based on reason
+                //dont track orientation
                 locationTracker.start();
 
                 orientationTracker

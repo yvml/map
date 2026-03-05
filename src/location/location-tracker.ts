@@ -39,6 +39,11 @@ export class LocationTracker extends Observable<LocationPoint> {
             return;
         }
 
+        // TODO: call getPosition and return a boolean here
+        // true: tracking began successfully
+        // false: it didnt (permission denied, out of bounds, bad accuracy)
+        //
+        //
         this.watchId = navigator.geolocation.watchPosition(
             this.handlePosition,
             this.handleError,
