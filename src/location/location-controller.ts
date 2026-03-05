@@ -141,9 +141,6 @@ export class LocationController {
         if (this.locationMarker) {
             this.locationMarker.redraw();
         }
-        if (this.headingMarker) {
-            this.headingMarker.update();
-        }
         // TODO: this could be very expensive
         this.pathLine.redraw();
     };
