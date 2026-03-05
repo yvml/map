@@ -4,12 +4,12 @@ export const defaultFeatures = {
     locationBounds: {
         name: "locationBounds",
         description: "Enable location bounds outlines around POIs",
-        value: false,
+        value: true,
     },
     console: {
         name: "console",
         description: "Enable debug console",
-        value: false,
+        value: true,
     },
     locationFollowAndRotate: {
         name: "locationFollowAndRotate",
