@@ -234,6 +234,12 @@ body {
 
 #poi-popup-image {
   width: 100%;
+  display: block;
+  background: #d4d4d4;
+}
+
+#poi-popup-image.poi-popup-image-loading {
+  min-height: 220px;
 }
 
 #poi-popup-close {

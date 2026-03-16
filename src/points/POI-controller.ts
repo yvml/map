@@ -26,6 +26,20 @@ export class POIController {
             },
         );
 
+        getElementOrThrow({ id: "poi-popup-image" }).addEventListener(
+            "load",
+            () => {
+                this.elements.image.classList.remove("poi-popup-image-loading");
+            },
+        );
+        getElementOrThrow({ id: "poi-popup-image" }).addEventListener(
+            "error",
+            () => {
+                this.elements.image.classList.add("poi-popup-image-loading");
+                this.elements.image.removeAttribute("src");
+            },
+        );
+
         this.elements = {
             container: getElementOrThrow({ id: "poi-popup" }),
             image: getElementOrThrow({ id: "poi-popup-image" }),
@@ -69,11 +83,17 @@ export class POIController {
         this.elements.title.textContent = poi.title;
 
         if (poi.imageName) {
+            this.elements.image.classList.add("poi-popup-image-loading");
+            this.elements.image.removeAttribute("src");
             this.elements.image.src = `${import.meta.env.BASE_URL}images/${poi.imageName}`;
             this.elements.image.alt = poi.title;
+            this.elements.image.hidden = false;
+        } else {
+            this.elements.image.removeAttribute("src");
+            this.elements.image.alt = "";
+            this.elements.image.classList.remove("poi-popup-image-loading");
+            this.elements.image.hidden = true;
         }
-
-        this.elements.image.hidden = !poi.imageName;
 
         if (poi.audioName) {
             this.audioController.setup({ poi });
