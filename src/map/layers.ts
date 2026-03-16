@@ -28,7 +28,7 @@ const droneLayer = tileLayer(
         maxZoom: 23,
         maxNativeZoom: 23,
         tileSize: 256,
-        errorTileUrl: `${import.meta.env.BASE_URL}/images/logo.png`, // TODO
+        errorTileUrl: `${import.meta.env.BASE_URL}/images/logo/logo-small.jpg`,
         edgeBufferTiles: 1,
         detectRetina: true,
     },

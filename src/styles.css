@@ -87,6 +87,10 @@ body {
   flex: 1;
 }
 
+.leaflet-container:focus {
+  outline: none;
+}
+
 #console {
   height: 20%;
   min-height: 0;
@@ -192,8 +196,12 @@ body {
   margin: 1;
 }
 
+.poi-popup-content {
+  padding: 0.75rem 1rem 1rem;
+}
+
 #poi-popup-image {
-  width: 60%;
+  width: 100%;
 }
 
 #poi-popup-close {
