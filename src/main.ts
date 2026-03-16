@@ -1,6 +1,5 @@
 import { tileLayers } from "./map/layers";
 import { initMap } from "./map/map";
-import L from "leaflet";
 import {
     POIBoundsController,
     POICollisionController,
@@ -101,16 +100,16 @@ new MapMovementController({
     configStore,
 });
 
-const bounds = configStore.getBounds();
-// TODO: temporary -- maybe setBounds
-if (bounds) {
-    L.rectangle(bounds, {
-        color: "#ff3b30",
-        weight: 2,
-        fill: false,
-        interactive: false,
-    }).addTo(map);
-}
+//const bounds = configStore.getBounds();
+//// TODO: temporary -- maybe setBounds
+//if (bounds) {
+//    L.rectangle(bounds, {
+//        color: "#ff3b30",
+//        weight: 2,
+//        fill: false,
+//        interactive: false,
+//    }).addTo(map);
+//}
 
 setInterval(() => {
     locationStore.saveToStorage();
