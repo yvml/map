@@ -55,15 +55,25 @@
   <!---- START POI Popup -->
   <div id="poi-popup" class="hidden">
     <div class="flex flex-col poi-popup-content">
-      <div class="flex place-content-between items-center">
+      <div class="flex place-content-between items-center poi-popup-header">
         <div id="poi-popup-title"></div>
-        <button id="poi-popup-close"
-          class="font-bold hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
+        <button id="poi-popup-close" class="popup-icon-button">
           x
         </button>
       </div>
       <img id="poi-popup-image" />
-      <audio id="poi-popup-audio-element" controls preload="none"></audio>
+      <div id="poi-popup-audio" class="hidden">
+        <div id="poi-popup-audio-player">
+          <button id="poi-popup-audio-back" type="button" aria-label="Go back 15 seconds">-15</button>
+          <button id="poi-popup-audio-toggle" type="button" aria-label="Play audio">▶</button>
+          <button id="poi-popup-audio-forward" type="button" aria-label="Go forward 15 seconds">+15</button>
+          <div id="poi-popup-audio-progress-track" aria-hidden="true">
+            <div id="poi-popup-audio-progress"></div>
+          </div>
+          <div id="poi-popup-audio-time">--:--</div>
+        </div>
+        <audio id="poi-popup-audio-media" preload="none"></audio>
+      </div>
     </div>
   </div>
   <!---- END POI Popup -->

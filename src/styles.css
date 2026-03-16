@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+:root {
+  --button-hover-background: #f3f3f3;
+}
+
 .poi-marker {
   background-color: white;
   padding: clamp(0.2rem, 0.5vw, 0.4rem);
@@ -15,6 +19,30 @@
 
 .hidden {
   display: none;
+}
+
+.popup-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.popup-icon-button:hover {
+  background: var(--button-hover-background);
+}
+
+.popup-icon-button:focus {
+  outline: none;
+}
+
+.popup-icon-button:focus-visible {
+  box-shadow: 0 0 0 2px #6b7280;
 }
 
 .location-heading-marker {
@@ -196,31 +224,113 @@ body {
   margin: 1;
 }
 
+.poi-popup-header {
+  padding-bottom: 8px;
+}
+
 .poi-popup-content {
   padding: 0.75rem 1rem 1rem;
 }
 
 #poi-popup-image {
   width: 100%;
+  display: block;
+  background: #d4d4d4;
+}
+
+#poi-popup-image.poi-popup-image-loading {
+  min-height: 220px;
 }
 
 #poi-popup-close {
   height: 30px;
   width: 30px;
+  padding: 0;
 }
 
 #poi-popup-audio {
-  background-color: #d4d4d4;
-  border: #b7b7b7;
-  border-style: solid;
-  border-radius: 12px;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
   padding-top: 10px;
   padding-bottom: 10px;
-  border-width: 2px;
+  margin-top: 12px;
 }
 
-#poi-popup-audio-element {
-  width: 100%;
+#poi-popup-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#poi-popup-audio-player button {
+  border: 1px solid #8f8f8f;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  min-height: 38px;
+  padding: 0 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+#poi-popup-audio-player button:hover {
+  background: var(--button-hover-background);
+}
+
+#poi-popup-audio-progress-track {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(143, 143, 143, 0.8);
+  cursor: pointer;
+}
+
+#poi-popup-audio-progress {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: #111;
+}
+
+#poi-popup-audio-time {
+  min-width: 52px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#poi-popup-audio-media {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  #poi-popup-audio-player {
+    flex-wrap: wrap;
+  }
+
+  #poi-popup-audio-back,
+  #poi-popup-audio-toggle,
+  #poi-popup-audio-forward {
+    order: 2;
+  }
+
+  #poi-popup-audio-progress-track {
+    order: 1;
+    flex-basis: calc(100% - 60px);
+  }
+
+  #poi-popup-audio-time {
+    order: 1;
+    margin-left: auto;
+  }
+
+  #poi-popup-audio-back {
+    margin-left: auto;
+  }
+
+  #poi-popup-audio-forward {
+    margin-right: auto;
+  }
 }
