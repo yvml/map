@@ -50,6 +50,7 @@ export const POIs: Array<POI> = [
     {
         title: "Outdoor Shower & Concrete Cubes",
         id: "outdoor-shower",
+        imageName: "outdoor-shower.jpg",
         audioName: "shower-cubes.m4a",
         location: {
             latitude: 34.181759,
@@ -116,7 +117,7 @@ export const POIs: Array<POI> = [
         title: "Heidi & Derek's Studio",
         audioName: "studio.m4a",
         id: "heidi-derek-studio",
-        imageName: "studios.jpg",
+        imageName: "heidi-studio.jpg", // TODO: support multiple images
         location: {
             latitude: 34.181909,
             longitude: -116.414384,
@@ -129,6 +130,7 @@ export const POIs: Array<POI> = [
     {
         title: "Recording Studio",
         id: "recording-studio",
+        imageName: "recording-studio.jpg",
         location: {
             latitude: 34.181869,
             longitude: -116.414445,
@@ -141,6 +143,7 @@ export const POIs: Array<POI> = [
     {
         title: "Sculpture Garden",
         id: "sculpture-garden",
+        imageName: "sculpture-garden.jpg",
         location: {
             latitude: 34.182357,
             longitude: -116.41468,
@@ -154,6 +157,7 @@ export const POIs: Array<POI> = [
         title: "Chicken Wire Dinosaur",
         id: "chicken-wire-dinosaur",
         audioName: "dinosaur.m4a",
+        imageName: "dinosaur.jpg",
         location: {
             latitude: 34.182057,
             longitude: -116.413928,
