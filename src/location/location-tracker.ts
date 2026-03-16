@@ -15,7 +15,8 @@ type StartResult =
               | "permission-denied"
               | "unknown"
               | "position-unavailable"
-              | "timeout";
+              | "timeout"
+              | "already-tracking";
       };
 
 const errorToResult = (error: unknown): StartResult => {
@@ -94,18 +95,21 @@ export class LocationTracker extends Observable<LocationPoint> {
                 };
             }
 
-            this.watchId = navigator.geolocation.watchPosition(
-                this.handlePosition,
-                (error) => {
-                    const result = errorToResult(error);
-                    return result;
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 2000, // TODO: see what this does
-                },
-            );
+            const watchError = await new Promise((_, reject) => {
+                this.watchId = navigator.geolocation.watchPosition(
+                    this.handlePosition,
+                    reject,
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 2000, // TODO: see what this does
+                    },
+                );
+            });
+
+            if (watchError) {
+                return errorToResult(watchError);
+            }
 
             debug(`[LocationTracker] watch started: ${this.watchId}`);
             return {
@@ -114,7 +118,7 @@ export class LocationTracker extends Observable<LocationPoint> {
             };
         } catch (error) {
             const result = errorToResult(error);
-            this.notify(result);
+            //this.notify(result);
             return result;
         }
     };
