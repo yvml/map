@@ -5,13 +5,45 @@ import { getConfig } from "../config";
 
 type StartResult =
     | {
-          result: "success";
+          status: "success";
           initialLocation: LocationPoint;
       }
     | {
-          result: "failure";
-          reason: "out-of-bounds" | "permission-denied" | "unknown";
+          status: "failure";
+          reason:
+              | "out-of-bounds"
+              | "permission-denied"
+              | "unknown"
+              | "position-unavailable"
+              | "timeout";
       };
+
+const errorToResult = (error: unknown): StartResult => {
+    const reason = (() => {
+        if (!(error instanceof GeolocationPositionError)) {
+            return "unknown";
+        }
+        switch (error.code) {
+            case GeolocationPositionError.PERMISSION_DENIED: {
+                return "permission-denied";
+            }
+            case GeolocationPositionError.POSITION_UNAVAILABLE: {
+                return "position-unavailable";
+            }
+            case GeolocationPositionError.TIMEOUT: {
+                return "timeout";
+            }
+            default: {
+                return "unknown";
+            }
+        }
+    })();
+
+    return {
+        status: "failure",
+        reason,
+    };
+};
 
 // TODO: locationPoit isn't enough to emit for observability
 export class LocationTracker extends Observable<LocationPoint> {
@@ -19,9 +51,9 @@ export class LocationTracker extends Observable<LocationPoint> {
      * Initialize EventListener
      */
     constructor() {
-        // TODO: move this out
         super();
 
+        // TODO: move this out
         document.addEventListener(
             "visibilitychange",
             this.handleVisibilityChange,
@@ -29,7 +61,7 @@ export class LocationTracker extends Observable<LocationPoint> {
     }
 
     // TODO: breaking out to help me think
-    public getInitialLocation = async (): StartResult => {
+    public getInitialLocation = async (): Promise<StartResult> => {
         try {
             // grab intiial location
             const position = await new Promise<GeolocationPosition>(
@@ -41,9 +73,25 @@ export class LocationTracker extends Observable<LocationPoint> {
                     });
                 },
             );
-        } catch (e) {
-            if (!(e instanceof GeolocationPositionError)) {
+
+            const initialLocation = {
+                ...position.coords,
+                timestamp: Date.now(),
+            };
+
+            if (!this.isWithinBounds(initialLocation)) {
+                return {
+                    status: "failure",
+                    reason: "out-of-bounds",
+                };
             }
+
+            return {
+                status: "success",
+                initialLocation: initialLocation,
+            };
+        } catch (error) {
+            return errorToResult(error);
         }
     };
 
