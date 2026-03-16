@@ -275,13 +275,27 @@ body {
     flex-wrap: wrap;
   }
 
+  #poi-popup-audio-back,
+  #poi-popup-audio-toggle,
+  #poi-popup-audio-forward {
+    order: 2;
+  }
+
   #poi-popup-audio-progress-track {
-    order: 4;
+    order: 1;
     flex-basis: calc(100% - 60px);
   }
 
   #poi-popup-audio-time {
-    order: 5;
+    order: 1;
     margin-left: auto;
+  }
+
+  #poi-popup-audio-back {
+    margin-left: auto;
+  }
+
+  #poi-popup-audio-forward {
+    margin-right: auto;
   }
 }
