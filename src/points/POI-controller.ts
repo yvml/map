@@ -4,6 +4,18 @@ import type { POI } from "../types";
 import { debug, getElementOrThrow, info } from "../utils";
 import { AudioController } from "./audio-controller";
 
+/**
+ * Top-level coordinator for POI popup content.
+ *
+ * Audio stack breakdown:
+ * - POIController shows and hides popup content for the active POI.
+ * - AudioController owns the custom player UI inside the popup.
+ * - AudioElement wraps the backing HTML audio node and handles media lifecycle.
+ *
+ * Provenance:
+ * - the current custom POI audio player integration was AI-generated
+ * - review behavior carefully when changing popup/audio interactions
+ */
 export class POIController {
     constructor(params: { poiTracker: POITracker }) {
         getElementOrThrow({ id: "poi-popup-close" }).addEventListener(

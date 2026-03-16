@@ -16,6 +16,11 @@ const getTimestampKey = (poi: POI) => {
 /**
  * Wraps the backing HTMLAudioElement used by the POI popup.
  *
+ * Audio stack breakdown:
+ * - POIController decides when popup audio should be shown for an active POI.
+ * - AudioController owns the custom player UI inside the popup.
+ * - AudioElement wraps the backing HTML audio node and handles media lifecycle.
+ *
  * Responsibilities:
  * - load and unload the active POI audio source
  * - restore and persist playback position per POI
@@ -24,6 +29,7 @@ const getTimestampKey = (poi: POI) => {
  *
  * Provenance:
  * - this class and its surrounding custom-player integration were AI-generated
+ * - the backing media element uses the id `poi-popup-audio-media`
  * - keep the behavior under review when changing popup audio UX or persistence
  */
 export class AudioElement {

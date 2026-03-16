@@ -19,6 +19,11 @@ const formatRemainingTime = (currentTime: number, duration: number) => {
 /**
  * Owns the custom POI audio player UI.
  *
+ * Audio stack breakdown:
+ * - POIController decides when popup audio should be shown for an active POI.
+ * - AudioController owns the custom player UI inside the popup.
+ * - AudioElement wraps the backing HTML audio node and handles media lifecycle.
+ *
  * Responsibilities:
  * - find the player-specific DOM nodes inside the popup
  * - bind button interactions for play/pause and +/-15 second seeking
@@ -27,6 +32,7 @@ const formatRemainingTime = (currentTime: number, duration: number) => {
  *
  * Provenance:
  * - this controller and its companion UI were AI-generated
+ * - the backing media element uses the id `poi-popup-audio-media`
  * - treat it as generated code that should be reviewed when modifying behavior
  */
 export class AudioController {

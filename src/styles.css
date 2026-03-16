@@ -21,6 +21,22 @@
   display: none;
 }
 
+.popup-icon-button {
+  font-weight: bold;
+}
+
+.popup-icon-button:hover {
+  background: var(--button-hover-background);
+}
+
+.popup-icon-button:focus {
+  outline: none;
+}
+
+.popup-icon-button:focus-visible {
+  box-shadow: 0 0 0 2px #6b7280;
+}
+
 .location-heading-marker {
   background: transparent;
   border: 0;
