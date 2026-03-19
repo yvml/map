@@ -1,5 +1,12 @@
-import { tileLayers } from "./map/layers";
-import { initMap } from "./map/map";
+import { getConfig, initConfig } from "./config";
+import { ConsoleTracker } from "./console";
+import {
+    LocationController,
+    LocationStore,
+    LocationTracker,
+    OrientationTracker,
+} from "./location";
+import { initMap, MapMovementController, tileLayers } from "./map";
 import {
     POIBoundsController,
     POICollisionController,
@@ -8,9 +15,7 @@ import {
     POITracker,
 } from "./points";
 import { SettingsMenu } from "./settings";
-import { LocationStore, LocationTracker, OrientationTracker } from "./location";
-import { ConsoleTracker } from "./console";
-import { getConfig, initConfig } from "./config";
+import { debug } from "./utils";
 
 import "./styles.css"; // TODO: remove tailwind and import normally
 
@@ -19,10 +24,6 @@ import "leaflet-rotate"; // allows map rotation
 import "leaflet.offline"; // TODO: remove
 
 import "leaflet-edgebuffer"; // prevents tile flashing
-
-import { debug } from "./utils";
-import { LocationController } from "./location/location-controller";
-import { MapMovementController } from "./map/map-movement-controller";
 
 initConfig();
 const configStore = getConfig();
