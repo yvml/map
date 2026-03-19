@@ -119,6 +119,8 @@ document.addEventListener("visibilitychange", () => {
     debug("[main] handleVisibilityChange");
     // save location when the user minimizes
     locationStore.saveToStorage();
+
+    locationTracker.handleVisibilityChange();
 });
 
 window.addEventListener("beforeunload", () => {

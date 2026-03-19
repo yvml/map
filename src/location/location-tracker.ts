@@ -4,22 +4,17 @@ import { Observable } from "../observable";
 import { getConfig } from "../config";
 
 export class LocationTracker extends Observable<LocationPoint> {
-    /**
-     * Initialize position tracker and EventListener
-     */
     constructor() {
-        // TODO: move this out
         super();
-
-        document.addEventListener(
-            "visibilitychange",
-            this.handleVisibilityChange,
-        );
-
-        // Initialize map elements
-        // TODO: map elements in this class feels like tight coupling
+        getConfig().addListener(({ key, value }) => {
+            if (key === "hasGrantedLocationAccess") {
+                if (value === true) {
+                    debug("[LocationTracker] hasGrantedLocationAccess changed");
+                    this.start();
+                }
+            }
+        });
     }
-
     /**
      * start tracking via navigator.geolocation
      */
@@ -56,17 +51,16 @@ export class LocationTracker extends Observable<LocationPoint> {
         }
     };
 
-    private handleVisibilityChange = () => {
+    public handleVisibilityChange = () => {
         debug("[LocationTracker] handleVisibilityChange");
         if (document.hidden) {
             this.stop();
         } else {
-            // TODO: only if the user has hit the locate button
             this.start();
         }
     };
 
-    private handlePosition = (position: GeolocationPosition) => {
+    public handlePosition = (position: GeolocationPosition) => {
         const { latitude, longitude, accuracy } = position.coords;
         const bounds = getConfig().getBounds();
         if (bounds && !bounds.contains([latitude, longitude])) {
