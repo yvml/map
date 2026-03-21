@@ -10,7 +10,7 @@ import {
 import { SettingsMenu } from "./settings";
 import { LocationStore, LocationTracker, OrientationTracker } from "./location";
 import { ConsoleTracker } from "./console";
-import { getConfig, initConfig } from "./config";
+import { getConfigStore, initConfig } from "./config";
 
 import "./styles.css"; // TODO: remove tailwind and import normally
 
@@ -25,7 +25,7 @@ import { LocationController } from "./location/location-controller";
 import { MapMovementController } from "./map/map-movement-controller";
 
 initConfig();
-const configStore = getConfig();
+const configStore = getConfigStore();
 
 new ConsoleTracker();
 new SettingsMenu();
@@ -119,6 +119,8 @@ document.addEventListener("visibilitychange", () => {
     debug("[main] handleVisibilityChange");
     // save location when the user minimizes
     locationStore.saveToStorage();
+
+    locationTracker.handleVisibilityChange();
 });
 
 window.addEventListener("beforeunload", () => {

@@ -59,7 +59,7 @@ export const initConfig = (
     });
 };
 
-export const getConfig = () => {
+export const getConfigStore = () => {
     if (!configStore) {
         throw Error("missing config store");
     }

@@ -1,15 +1,13 @@
-import { getConfig } from "../config";
+import { getConfigStore } from "../config";
 import { getElementOrThrow, logger, type LogLevel } from "../utils";
 
 export class ConsoleTracker {
     constructor() {
-        const configStore = getConfig();
+        const configStore = getConfigStore();
         this.consoleElement = getElementOrThrow({ id: "console" });
         this.unsubscribeFn = undefined;
 
-        this.handleVisibilityChange(
-            configStore.getFeature("console").value,
-        );
+        this.handleVisibilityChange(configStore.getFeature("console").value);
 
         configStore.addListener((event) => {
             if (event.key !== "features") {

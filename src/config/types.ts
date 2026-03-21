@@ -13,7 +13,8 @@ export type FeatureKey = keyof FeaturesConfig;
 export type Config = {
     features: Record<FeatureKey, FeatureConfig>;
     bounds?: L.LatLngBounds;
-} & Record<Exclude<string, "features" | "bounds">, unknown>;
+    hasGrantedLocationAccess: boolean;
+};
 
 export type FeatureUpdateEvent = {
     key: "features";
@@ -28,4 +29,12 @@ export type BoundsUpdateEvent = {
     value: L.LatLngBounds;
 };
 
-export type ConfigEvent = FeatureUpdateEvent | BoundsUpdateEvent;
+export type LocationPermissionUpdateEvent = {
+    key: "hasGrantedLocationAccess";
+    value: boolean;
+};
+
+export type ConfigEvent =
+    | FeatureUpdateEvent
+    | BoundsUpdateEvent
+    | LocationPermissionUpdateEvent;

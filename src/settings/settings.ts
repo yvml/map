@@ -1,6 +1,6 @@
 import { LocalStorageProvider } from "../storage";
 import { getElementOrThrow } from "../utils";
-import { getConfig, type FeatureKey } from "../config";
+import { getConfigStore, type FeatureKey } from "../config";
 
 export class SettingsMenu {
     constructor() {
@@ -27,11 +27,10 @@ export class SettingsMenu {
             LocalStorageProvider.clear();
         });
 
-        const configStore = getConfig();
+        const configStore = getConfigStore();
 
         // TODO: remove partial and use .map
-        const checkboxByKey: Partial<Record<FeatureKey, HTMLInputElement>> =
-            {};
+        const checkboxByKey: Partial<Record<FeatureKey, HTMLInputElement>> = {};
 
         Object.entries(configStore.config.features).forEach(
             ([key, feature]) => {

@@ -1,4 +1,4 @@
-import { getConfig } from "../config";
+import { getConfigStore } from "../config";
 import type { POI } from "../types";
 import { debug } from "../utils";
 import L from "leaflet";
@@ -17,7 +17,7 @@ const poiToBoundsLayer = (poi: POI) =>
 
 export class POIBoundsController {
     constructor({ POIs }: POIBoundsControllerParams) {
-        const configStore = getConfig();
+        const configStore = getConfigStore();
 
         configStore.addListener((event) => {
             if (event.key !== "features") {

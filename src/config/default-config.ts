@@ -8,4 +8,5 @@ export const defaultConfig = {
         [34.18152307750378, -116.41490672855878], // south-west
         [34.18253355653219, -116.41373685883292], // north-east
     ),
+    hasGrantedLocationAccess: false,
 } as const satisfies Config;
