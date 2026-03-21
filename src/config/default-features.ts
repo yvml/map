@@ -4,17 +4,17 @@ export const defaultFeatures = {
     locationBounds: {
         name: "locationBounds",
         description: "Enable location bounds outlines around POIs",
-        value: true,
+        value: false,
     },
     console: {
         name: "console",
         description: "Enable debug console",
-        value: true,
+        value: false,
     },
     locationFollowAndRotate: {
         name: "locationFollowAndRotate",
         description:
             "Follow user location and rotate map by orientation (disable to keep map static while dot/cone still move)",
-        value: true,
+        value: false,
     },
 } as const satisfies Record<string, FeatureConfig>;
