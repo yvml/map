@@ -119,7 +119,7 @@ export const POIs: Array<POI> = [
         id: "heidi-derek-studio",
         imageName: "heidi-studio.jpg", // TODO: support multiple images
         location: {
-            latitude: 34.181897,
+            latitude: 34.181907,
             longitude: -116.414343,
         },
         bounds: toBounds(
