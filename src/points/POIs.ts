@@ -11,8 +11,8 @@ export const POIs: Array<POI> = [
         title: "Parking Lot",
         id: "parking-lot",
         location: {
-            latitude: 34.181922,
-            longitude: -116.414579,
+            latitude: 34.181896,
+            longitude: -116.414549,
         },
         bounds: toBounds(
             [34.18185729296687, -116.41471654348615],
@@ -25,8 +25,8 @@ export const POIs: Array<POI> = [
         imageName: "quonset.jpg",
         audioName: "quonset.m4a",
         location: {
-            latitude: 34.181792,
-            longitude: -116.414532,
+            latitude: 34.181775,
+            longitude: -116.414544,
         },
         bounds: toBounds(
             [34.181741186291075, -116.41470102362288],
@@ -39,8 +39,8 @@ export const POIs: Array<POI> = [
         imageName: "foundry.jpg",
         audioName: "foundry.m4a",
         location: {
-            latitude: 34.181725,
-            longitude: -116.414696,
+            latitude: 34.181714,
+            longitude: -116.414676,
         },
         bounds: toBounds(
             [34.181655132362465, -116.4147494965721],
@@ -53,8 +53,8 @@ export const POIs: Array<POI> = [
         imageName: "outdoor-shower.jpg",
         audioName: "shower-cubes.m4a",
         location: {
-            latitude: 34.181759,
-            longitude: -116.414433,
+            latitude: 34.181709,
+            longitude: -116.414387,
         },
         bounds: toBounds(
             [34.18169709583605, -116.41449514486598],
@@ -67,8 +67,8 @@ export const POIs: Array<POI> = [
         imageName: "airstream.jpg",
         audioName: "airstream.m4a",
         location: {
-            latitude: 34.181665,
-            longitude: -116.414396,
+            latitude: 34.181642,
+            longitude: -116.414348,
         },
         bounds: toBounds(
             [34.181621377419895, -116.41441280868105],
@@ -80,8 +80,8 @@ export const POIs: Array<POI> = [
         imageName: "sleeping-library.jpg",
         id: "library",
         location: {
-            latitude: 34.18181,
-            longitude: -116.41425,
+            latitude: 34.181793,
+            longitude: -116.414219,
         },
         bounds: toBounds(
             [34.18174924986043, -116.41430622340295],
@@ -105,8 +105,8 @@ export const POIs: Array<POI> = [
         id: "gallery",
         imageName: "gallery.jpg",
         location: {
-            latitude: 34.181959,
-            longitude: -116.414309,
+            latitude: 34.181975,
+            longitude: -116.414294,
         },
         bounds: toBounds(
             [34.18195982734275, -116.41434991031226],
@@ -119,8 +119,8 @@ export const POIs: Array<POI> = [
         id: "heidi-derek-studio",
         imageName: "heidi-studio.jpg", // TODO: support multiple images
         location: {
-            latitude: 34.181909,
-            longitude: -116.414384,
+            latitude: 34.181897,
+            longitude: -116.414343,
         },
         bounds: toBounds(
             [34.18186418019119, -116.41439968225006],
@@ -132,8 +132,8 @@ export const POIs: Array<POI> = [
         id: "recording-studio",
         imageName: "recording-studio.jpg",
         location: {
-            latitude: 34.181869,
-            longitude: -116.414445,
+            latitude: 34.181888,
+            longitude: -116.414429,
         },
         bounds: toBounds(
             [34.181874566899046, -116.41447276636669],
@@ -145,8 +145,8 @@ export const POIs: Array<POI> = [
         id: "sculpture-garden",
         imageName: "sculpture-garden.jpg",
         location: {
-            latitude: 34.182357,
-            longitude: -116.41468,
+            latitude: 34.182304,
+            longitude: -116.414620,
         },
         bounds: toBounds(
             [34.18213373726893, -116.41479250880827],
@@ -159,8 +159,8 @@ export const POIs: Array<POI> = [
         audioName: "dinosaur.m4a",
         imageName: "dinosaur.jpg",
         location: {
-            latitude: 34.182057,
-            longitude: -116.413928,
+            latitude: 34.182053,
+            longitude: -116.413867,
         },
         bounds: toBounds(
             [34.1819312413371, -116.41401924444384],
