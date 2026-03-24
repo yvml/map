@@ -9,7 +9,9 @@ type AudioEventName =
     | "play"
     | "timeupdate";
 
+// Treat very early resume points as accidental partial progress.
 const RESTART_FROM_BEGINNING_THRESHOLD_SECONDS = 1;
+// If playback stopped with only a couple of seconds left, restart next time.
 const RESTART_NEAR_END_THRESHOLD_SECONDS = 2;
 
 const getTimestampKey = (poi: POI) => {
@@ -201,6 +203,7 @@ export class AudioElement {
 
     private mediaElement: HTMLAudioElement;
 
+    /** Resets paused playback to 0 when the saved position is effectively at an edge. */
     private resetToStartIfResumePointIsAtEdge() {
         if (!this.shouldRestartFromBeginning(this.mediaElement.currentTime)) {
             return;
@@ -213,6 +216,11 @@ export class AudioElement {
         }
     }
 
+    /**
+     * Returns true when a stored or current playback position should be treated
+     * as "start over" rather than "resume", either because it is near 0 or
+     * because it is effectively at the end of the clip.
+     */
     private shouldRestartFromBeginning(currentTime: number) {
         if (!Number.isFinite(currentTime)) {
             return true;
