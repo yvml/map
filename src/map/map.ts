@@ -42,8 +42,9 @@ export const initMap = (params: MapParameters) => {
     debug(`[map] adding additionalLayers: ${params.additionalLayers}`);
     params.additionalLayers?.forEach((layer) => map.addLayer(layer));
 
-    // Force a redraw of the accuracy circle during map movements (especially iOS pinch-zoom).
-    map.on("move", locationController.zoomAnimationCallback);
+    // Force a redraw of the accuracy circle during zooming without doing extra
+    // work during pan/rotate gestures on iOS.
+    map.on("zoom", locationController.zoomAnimationCallback);
 
     // add UI widget for holding onto layers
     if (config.tileLayers /* TODO: && buildFlag === "debug" */) {
