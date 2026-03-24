@@ -13,13 +13,7 @@ import { markerIdForPOI, poiMarker } from "./poi-marker";
  * - apply persistent selected-marker styling when POITracker changes
  */
 export class POIMarkerController {
-    constructor({
-        poiTracker,
-        POIs,
-    }: {
-        poiTracker: POITracker;
-        POIs: POI[];
-    }) {
+    constructor({ poiTracker, POIs }: { poiTracker: POITracker; POIs: POI[] }) {
         this.layer = L.layerGroup(
             POIs.map((POI, index) => {
                 const { latitude, longitude } = POI.location;
@@ -32,7 +26,6 @@ export class POIMarkerController {
             }),
         );
 
-        // Marker styling is driven from POITracker so map state stays out of the popup controller.
         poiTracker.addListener((activePOI) => {
             if (activePOI) {
                 const nextMarker = getElementOrThrow({
