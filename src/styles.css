@@ -16,8 +16,8 @@
   opacity: 1;
   transform: scale(1);
   transition:
-    opacity 120ms ease-out,
-    transform 120ms ease-out;
+    opacity 120ms cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 120ms cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .poi-marker-number {
