@@ -145,7 +145,7 @@ export const POIs: Array<POI> = [
         id: "sculpture-garden",
         imageName: "sculpture-garden.jpg",
         location: {
-            latitude: 34.182304,
+            latitude: 34.182230,
             longitude: -116.414620,
         },
         bounds: toBounds(
