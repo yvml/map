@@ -30,7 +30,8 @@
 }
 
 .poi-marker-selected {
-  border-color: #dc2626;
+  border-color: #268fdc;
+  border-width: 3px;
 }
 
 .hidden {
