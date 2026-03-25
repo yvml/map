@@ -113,6 +113,7 @@ new MapMovementController({
     locationTracker,
     orientationTracker,
     configStore,
+    poiTracker,
 });
 
 setInterval(() => {

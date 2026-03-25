@@ -1,12 +1,14 @@
 import type L from "leaflet";
 import type { ConfigStore } from "../config";
 import type { LocationTracker, OrientationTracker } from "../location";
+import type { POITracker } from "../points";
 
 type MapMovementControllerParams = {
     map: L.Map;
     locationTracker: LocationTracker;
     orientationTracker: OrientationTracker;
     configStore: ConfigStore;
+    poiTracker: POITracker;
 };
 
 export class MapMovementController {
@@ -15,10 +17,32 @@ export class MapMovementController {
         locationTracker,
         orientationTracker,
         configStore,
+        poiTracker,
     }: MapMovementControllerParams) {
         this.map = map;
         this.locationTracker = locationTracker;
         this.orientationTracker = orientationTracker;
+
+        /**
+         * center the map when a user clicks on a marker
+         */
+        poiTracker.addListener((activePOI) => {
+            if (!activePOI) {
+                return;
+            }
+
+            const poiPosition = this.map.latLngToContainerPoint([
+                activePOI.location.latitude,
+                activePOI.location.longitude,
+            ]);
+            const mapSize = this.map.getSize();
+            const targetX = mapSize.x / 2 - mapSize.x * 0.1;
+            const targetY = mapSize.y * 0.1;
+
+            this.map.panBy([poiPosition.x - targetX, poiPosition.y - targetY], {
+                animate: true,
+            });
+        });
 
         if (configStore.getFeature("locationFollowAndRotate").value) {
             this.enable();
