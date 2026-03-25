@@ -76,7 +76,7 @@ export class POIPopupController {
         if (poi.imageName) {
             this.elements.image.classList.add("poi-popup-image-loading");
             this.elements.image.removeAttribute("src");
-            this.elements.image.src = `${import.meta.env.BASE_URL}images/${poi.imageName}`;
+            this.elements.image.src = `${import.meta.env.BASE_URL}images/sites/${poi.imageName}`;
             this.elements.image.alt = poi.title;
             this.elements.image.hidden = false;
         } else {

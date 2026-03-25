@@ -26,7 +26,7 @@ const getMediaSessionArtwork = (imageName?: string): MediaImage[] => {
     const imageBaseName = imageName.replace(/\.[^.]+$/, "");
 
     return [256, 512, 1024].map((size) => ({
-        src: `${import.meta.env.BASE_URL}images/artwork/${imageBaseName}-${size}.jpg`,
+        src: `${import.meta.env.BASE_URL}images/sites/thumbnails/${imageBaseName}-${size}.jpg`,
         sizes: `${size}x${size}`,
         type: "image/jpeg",
     }));
