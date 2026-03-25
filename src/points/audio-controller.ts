@@ -18,6 +18,20 @@ const formatRemainingTime = (currentTime: number, duration: number) => {
     return `-${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
+const getMediaSessionArtwork = (imageName?: string): MediaImage[] => {
+    if (!imageName) {
+        return [];
+    }
+
+    const imageBaseName = imageName.replace(/\.[^.]+$/, "");
+
+    return [256, 512, 1024].map((size) => ({
+        src: `${import.meta.env.BASE_URL}images/artwork/${imageBaseName}-${size}.jpg`,
+        sizes: `${size}x${size}`,
+        type: "image/jpeg",
+    }));
+};
+
 /**
  * Owns the custom POI audio player UI.
  *
@@ -257,13 +271,7 @@ export class AudioController {
             title: poi.title,
             artist: "YVML",
             album: "Interactive Map",
-            artwork: poi.imageName
-                ? [
-                      {
-                          src: `${import.meta.env.BASE_URL}images/${poi.imageName}`,
-                      },
-                  ]
-                : [],
+            artwork: getMediaSessionArtwork(poi.imageName),
         });
     }
 
