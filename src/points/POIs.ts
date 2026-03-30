@@ -8,7 +8,7 @@ const toBounds = (
 
 export const POIs: Array<POI> = [
     {
-        title: "Welcome",
+        title: "Welcome to YVML!",
         id: "welcome",
         audioName: "welcome.m4a",
         location: {
@@ -145,8 +145,8 @@ export const POIs: Array<POI> = [
         id: "sculpture-garden",
         imageName: "sculpture-garden.jpg",
         location: {
-            latitude: 34.182230,
-            longitude: -116.414620,
+            latitude: 34.18223,
+            longitude: -116.41462,
         },
         bounds: toBounds(
             [34.18213373726893, -116.41479250880827],
