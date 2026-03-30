@@ -4,8 +4,8 @@ export const CACHE_TTL_HEADER = "x-yvml-cache-ttl-hours";
 
 const CACHEABLE_ASSET_PATHS = [
     "audio/",
-    "images/sites/",
-    "images/sites/thumbnails/",
+    "images/",
+    "icons/",
     "tiles/",
     "new-tiles/",
 ] as const;
