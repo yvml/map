@@ -14,9 +14,6 @@ export class SettingsMenu {
         const featureFlagsList = getElementOrThrow({
             id: "settings-feature-flags-list",
         });
-        const assetCacheControls = getElementOrThrow({
-            id: "settings-asset-cache-controls",
-        });
 
         settingsButton.addEventListener("click", () => {
             settingsPane.classList.toggle("hidden");
@@ -81,49 +78,8 @@ export class SettingsMenu {
             },
         );
 
-        const ttlRow = document.createElement("label");
-        ttlRow.className = "settings-feature-flag-row";
-
-        const ttlInput = document.createElement("input");
-        ttlInput.type = "number";
-        ttlInput.min = "1";
-        ttlInput.step = "1";
-        ttlInput.value = String(configStore.getAssetCache().ttlHours);
-
-        const ttlTextContainer = document.createElement("div");
-        ttlTextContainer.className = "settings-feature-flag-text-flex";
-
-        const ttlNameElement = document.createElement("strong");
-        ttlNameElement.textContent = "Cache retention (hours)";
-
-        const ttlDescriptionElement = document.createElement("span");
-        ttlDescriptionElement.textContent =
-            "Previously downloaded app audio, images, and hosted tiles stay cached for this many hours.";
-
-        ttlTextContainer.appendChild(ttlNameElement);
-        ttlTextContainer.appendChild(ttlDescriptionElement);
-
-        ttlRow.appendChild(ttlInput);
-        ttlRow.appendChild(ttlTextContainer);
-        assetCacheControls.appendChild(ttlRow);
-
-        ttlInput.addEventListener("change", () => {
-            const ttlHours = Number(ttlInput.value);
-
-            if (!Number.isFinite(ttlHours) || ttlHours <= 0) {
-                ttlInput.value = String(configStore.getAssetCache().ttlHours);
-                return;
-            }
-
-            configStore.setAssetCache({ ttlHours });
-        });
-
         configStore.addListener((event) => {
             if (event.key !== "features") {
-                if (event.key === "assetCache") {
-                    ttlInput.value = String(event.value.ttlHours);
-                }
-
                 return;
             }
 
