@@ -2,6 +2,18 @@ import { clearAppStorage } from "../cache";
 import { getElementOrThrow } from "../utils";
 import { getConfigStore, type FeatureKey } from "../config";
 
+/**
+ * Owns the Settings pane interactions.
+ *
+ * Responsibilities:
+ * - toggle the pane open and closed
+ * - render feature-flag controls from config
+ * - clear app-managed browser storage on demand
+ *
+ * Provenance:
+ * - the storage-clearing integration was AI-generated
+ * - review settings behavior carefully when wiring new persisted state
+ */
 export class SettingsMenu {
     constructor() {
         const settingsButton = getElementOrThrow({ id: "navbar-settings" });

@@ -29,6 +29,9 @@ import "leaflet-edgebuffer"; // prevents tile flashing
 
 initConfig();
 const configStore = getConfigStore();
+
+// AI-generated asset-cache bootstrap. Keep startup ordering under review if
+// service worker registration or persisted config initialization changes.
 void registerAssetCacheServiceWorker();
 
 new ConsoleTracker();

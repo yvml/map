@@ -1,3 +1,10 @@
+/**
+ * Shared cache constants for app-hosted public assets.
+ *
+ * Provenance:
+ * - this cache layer was AI-generated
+ * - review cache scope and invalidation behavior carefully before changing it
+ */
 export const ASSET_CACHE_NAME = "yvml-asset-cache-v1";
 export const CACHE_TIMESTAMP_HEADER = "x-yvml-cached-at";
 export const CACHE_TTL_HEADER = "x-yvml-cache-ttl-hours";
@@ -14,6 +21,7 @@ export const getCacheableAssetPathPrefixes = (basePath: string) => {
     return CACHEABLE_ASSET_PATHS.map((path) => `${basePath}${path}`);
 };
 
+/** Returns whether a same-origin request should be managed by the asset cache. */
 export const isCacheableAssetRequest = (url: URL, basePath: string) => {
     if (url.origin !== self.location.origin) {
         return false;
@@ -38,6 +46,7 @@ export const getTtlHours = (response: Response) => {
     return Number.isFinite(ttlHours) ? ttlHours : undefined;
 };
 
+/** Treats missing or malformed cache metadata as expired to avoid stale reuse. */
 export const isExpiredResponse = (
     response: Response,
     now: number = Date.now(),

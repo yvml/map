@@ -7,6 +7,7 @@ export type FeatureConfig = {
     value: boolean;
 };
 
+/** Cache retention settings for app-hosted public assets. */
 export type AssetCacheConfig = {
     ttlHours: number;
 };

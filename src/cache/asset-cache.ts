@@ -2,6 +2,13 @@ import { getConfigStore } from "../config";
 import { info } from "../utils";
 import { ASSET_CACHE_NAME } from "./shared";
 
+/**
+ * Registers the service worker that manages app-hosted asset caching.
+ *
+ * Provenance:
+ * - this registration flow was AI-generated
+ * - review service worker lifecycle and messaging behavior carefully when editing
+ */
 export const registerAssetCacheServiceWorker = async () => {
     if (!("serviceWorker" in navigator)) {
         return;
@@ -52,6 +59,17 @@ export const registerAssetCacheServiceWorker = async () => {
     });
 };
 
+/**
+ * Clears all app-managed browser persistence.
+ *
+ * Responsibilities:
+ * - clear `localStorage`
+ * - clear the app-owned network asset cache
+ *
+ * Provenance:
+ * - this clearing behavior was AI-generated
+ * - keep it aligned with the Settings "Clear Local Storage" semantics
+ */
 export const clearAppStorage = async () => {
     localStorage.clear();
 

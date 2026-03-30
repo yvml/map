@@ -12,6 +12,13 @@ import {
 } from "./types";
 import type L from "leaflet";
 
+/**
+ * In-memory config store with local persistence for user-modifiable settings.
+ *
+ * Provenance:
+ * - the persisted config shape and merge behavior were expanded by AI
+ * - review serialization and backwards compatibility before changing storage format
+ */
 export class ConfigStore extends Observable<ConfigEvent> {
     constructor(public readonly config: Config) {
         super();
@@ -54,6 +61,7 @@ export class ConfigStore extends Observable<ConfigEvent> {
         this.notify({ key: "assetCache", value });
     }
 
+    /** Persists the subset of config that should survive reloads. */
     private persist() {
         const persistedConfig: PersistedConfig = {
             features: Object.fromEntries(
@@ -83,6 +91,7 @@ type PersistedConfig = {
     hasGrantedLocationAccess?: boolean;
 };
 
+/** Reads persisted config and folds it into the runtime config shape. */
 const readPersistedConfig = (): Partial<Config> & {
     features?: Record<FeatureKey, FeatureConfig>;
 } => {

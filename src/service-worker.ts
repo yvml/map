@@ -10,6 +10,19 @@ import {
 
 declare const self: ServiceWorkerGlobalScope;
 
+/**
+ * Service worker for app-hosted asset caching.
+ *
+ * Responsibilities:
+ * - intercept same-origin requests for public assets
+ * - serve fresh cached responses before TTL expiry
+ * - refresh expired entries from the network
+ * - fall back to stale cached responses when the network is unavailable
+ *
+ * Provenance:
+ * - this service worker was AI-generated
+ * - review request scoping, TTL behavior, and cache invalidation carefully
+ */
 const DEFAULT_TTL_HOURS = 24 * 7;
 
 let assetCacheTtlHours = DEFAULT_TTL_HOURS;
@@ -21,6 +34,7 @@ const getCache = async () => {
     return caches.open(ASSET_CACHE_NAME);
 };
 
+/** Re-wraps a response so cache metadata travels with the stored entry. */
 const buildCachedResponse = async (response: Response) => {
     const headers = new Headers(response.headers);
     headers.set(CACHE_TIMESTAMP_HEADER, String(Date.now()));
@@ -33,6 +47,7 @@ const buildCachedResponse = async (response: Response) => {
     });
 };
 
+/** Fetches a fresh asset and stores it in CacheStorage when the response is usable. */
 const fetchAndCache = async (request: Request, cache: Cache) => {
     const networkResponse = await fetch(request);
 
@@ -46,6 +61,7 @@ const fetchAndCache = async (request: Request, cache: Cache) => {
     return networkResponse;
 };
 
+/** Implements cache-first reads with TTL refresh and stale-on-error fallback. */
 const handleAssetRequest = async (request: Request) => {
     const cache = await getCache();
     const cachedResponse = await cache.match(request);
