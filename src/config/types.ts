@@ -7,11 +7,16 @@ export type FeatureConfig = {
     value: boolean;
 };
 
+export type AssetCacheConfig = {
+    ttlHours: number;
+};
+
 export type FeaturesConfig = typeof defaultFeatures;
 export type FeatureKey = keyof FeaturesConfig;
 
 export type Config = {
     features: Record<FeatureKey, FeatureConfig>;
+    assetCache: AssetCacheConfig;
     bounds?: L.LatLngBounds;
     hasGrantedLocationAccess: boolean;
 };
@@ -29,6 +34,11 @@ export type BoundsUpdateEvent = {
     value: L.LatLngBounds;
 };
 
+export type AssetCacheUpdateEvent = {
+    key: "assetCache";
+    value: AssetCacheConfig;
+};
+
 export type LocationPermissionUpdateEvent = {
     key: "hasGrantedLocationAccess";
     value: boolean;
@@ -36,5 +46,6 @@ export type LocationPermissionUpdateEvent = {
 
 export type ConfigEvent =
     | FeatureUpdateEvent
+    | AssetCacheUpdateEvent
     | BoundsUpdateEvent
     | LocationPermissionUpdateEvent;

@@ -7,6 +7,7 @@ import {
     LocationController,
 } from "./location";
 import { initMap, tileLayers, MapMovementController } from "./map";
+import { registerAssetCacheServiceWorker } from "./cache";
 import {
     POITracker,
     POIPopupController,
@@ -28,6 +29,7 @@ import "leaflet-edgebuffer"; // prevents tile flashing
 
 initConfig();
 const configStore = getConfigStore();
+void registerAssetCacheServiceWorker();
 
 new ConsoleTracker();
 new SettingsMenu();
