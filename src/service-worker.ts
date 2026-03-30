@@ -23,9 +23,7 @@ declare const self: ServiceWorkerGlobalScope;
  * - this service worker was AI-generated
  * - review request scoping, TTL behavior, and cache invalidation carefully
  */
-const DEFAULT_TTL_HOURS = 24 * 7;
-
-let assetCacheTtlHours = DEFAULT_TTL_HOURS;
+const ASSET_CACHE_TTL_HOURS = 24 * 7;
 
 const getBasePath = () =>
     new URL(import.meta.env.BASE_URL ?? "/", self.location.origin).pathname;
@@ -38,7 +36,7 @@ const getCache = async () => {
 const buildCachedResponse = async (response: Response) => {
     const headers = new Headers(response.headers);
     headers.set(CACHE_TIMESTAMP_HEADER, String(Date.now()));
-    headers.set(CACHE_TTL_HEADER, String(assetCacheTtlHours));
+    headers.set(CACHE_TTL_HEADER, String(ASSET_CACHE_TTL_HOURS));
 
     return new Response(await response.clone().blob(), {
         status: response.status,
@@ -87,20 +85,6 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
     event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener("message", (event) => {
-    if (event.data?.type !== "SET_ASSET_CACHE_TTL") {
-        return;
-    }
-
-    const ttlHours = Number(event.data.ttlHours);
-
-    if (!Number.isFinite(ttlHours) || ttlHours <= 0) {
-        return;
-    }
-
-    assetCacheTtlHours = ttlHours;
 });
 
 self.addEventListener("fetch", (event) => {
