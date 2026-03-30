@@ -92,7 +92,10 @@ const handleAssetRequest = async (request: Request) => {
     const cachedResponse = await cache.match(request);
 
     if (cachedResponse && !isExpiredResponse(cachedResponse)) {
-        debug("[asset-cache-sw] cache hit", request.url);
+        debug(
+            "[asset-cache-sw] serving cached response without network fetch",
+            request.url,
+        );
         return cachedResponse;
     }
 

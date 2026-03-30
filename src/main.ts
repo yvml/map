@@ -7,7 +7,9 @@ import {
     LocationController,
 } from "./location";
 import { initMap, tileLayers, MapMovementController } from "./map";
-import { registerAssetCacheServiceWorker } from "./cache";
+import {
+    AssetCacheController,
+} from "./cache";
 import {
     POITracker,
     POIPopupController,
@@ -30,9 +32,7 @@ import "leaflet-edgebuffer"; // prevents tile flashing
 initConfig();
 const configStore = getConfigStore();
 
-// AI-generated asset-cache bootstrap. Keep startup ordering under review if
-// service worker registration or persisted config initialization changes.
-void registerAssetCacheServiceWorker();
+new AssetCacheController({ configStore });
 
 new ConsoleTracker();
 new SettingsMenu();

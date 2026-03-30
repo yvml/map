@@ -17,4 +17,10 @@ export const defaultFeatures = {
             "Follow user location and rotate map by orientation (disable to keep map static while dot/cone still move)",
         value: false,
     },
+    assetCaching: {
+        name: "assetCaching",
+        description:
+            "Cache app-hosted audio, images, and tiles locally to reuse them without another network request.",
+        value: true,
+    },
 } as const satisfies Record<string, FeatureConfig>;
