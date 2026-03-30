@@ -8,8 +8,9 @@ const toBounds = (
 
 export const POIs: Array<POI> = [
     {
-        title: "Parking Lot",
-        id: "parking-lot",
+        title: "Welcome",
+        id: "welcome",
+        audioName: "welcome.m4a",
         location: {
             latitude: 34.181896,
             longitude: -116.414549,
@@ -23,7 +24,6 @@ export const POIs: Array<POI> = [
         title: "Quonset",
         id: "quonset",
         imageName: "quonset.jpg",
-        audioName: "quonset.m4a",
         location: {
             latitude: 34.181775,
             longitude: -116.414544,
