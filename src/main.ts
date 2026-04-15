@@ -100,6 +100,7 @@ const map = initMap({
     providers: {
         poiTracker,
         locationController,
+        configStore,
     },
 });
 

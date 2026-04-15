@@ -2,6 +2,7 @@ import L, { Layer, TileLayer, type MapOptions } from "leaflet";
 import { POITracker } from "../points";
 import { debug } from "../utils";
 import type { LocationController } from "../location/location-controller";
+import type { ConfigStore } from "../config";
 
 type MapConfiguration = {
     initialLocation: [number, number];
@@ -22,13 +23,14 @@ type MapParameters = {
     providers: {
         poiTracker: POITracker;
         locationController: LocationController;
+        configStore: ConfigStore;
     };
     additionalLayers?: Layer[];
 };
 
 export const initMap = (params: MapParameters) => {
     const { config } = params;
-    const { poiTracker, locationController } = params.providers;
+    const { poiTracker, locationController, configStore } = params.providers;
 
     const map = L.map("map", config.mapOptions)
         .setView(config.initialLocation, config.initialZoom)
@@ -46,9 +48,27 @@ export const initMap = (params: MapParameters) => {
     // work during pan/rotate gestures on iOS.
     map.on("zoom", locationController.zoomAnimationCallback);
 
-    // add UI widget for holding onto layers
+    // add UI widget for switching tile layers — toggled by the showLayers config feature
     if (config.tileLayers /* TODO: && buildFlag === "debug" */) {
-        L.control.layers(config.tileLayers).addTo(map);
+        let layersControl: L.Control.Layers | undefined;
+
+        const applyShowLayers = (show: boolean) => {
+            if (show && !layersControl) {
+                layersControl = L.control.layers(config.tileLayers).addTo(map);
+            } else if (!show && layersControl) {
+                layersControl.remove();
+                layersControl = undefined;
+            }
+        };
+
+        // Apply the initial value from config
+        applyShowLayers(configStore.getShowLayers());
+
+        // React to future changes
+        configStore.addListener((event) => {
+            if (event.key !== "showLayers") return;
+            applyShowLayers(event.value);
+        });
     }
 
     // Safari (macOS/iOS) can change viewport when the location permission dialog

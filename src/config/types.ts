@@ -14,6 +14,7 @@ export type Config = {
     features: Record<FeatureKey, FeatureConfig>;
     bounds?: L.LatLngBounds;
     hasGrantedLocationAccess: boolean;
+    showLayers: boolean;
 };
 
 export type FeatureUpdateEvent = {
@@ -34,7 +35,13 @@ export type LocationPermissionUpdateEvent = {
     value: boolean;
 };
 
+export type ShowLayersUpdateEvent = {
+    key: "showLayers";
+    value: boolean;
+};
+
 export type ConfigEvent =
     | FeatureUpdateEvent
     | BoundsUpdateEvent
-    | LocationPermissionUpdateEvent;
+    | LocationPermissionUpdateEvent
+    | ShowLayersUpdateEvent;

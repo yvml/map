@@ -40,6 +40,16 @@ export class ConfigStore extends Observable<ConfigEvent> {
         this.config.bounds = bounds;
         this.notify({ key: "bounds", value: bounds });
     }
+
+    getShowLayers(): boolean {
+        return this.config.showLayers;
+    }
+
+    setShowLayers(value: boolean) {
+        debug(`setting showLayers to ${value}`);
+        this.config.showLayers = value;
+        this.notify({ key: "showLayers", value });
+    }
 }
 
 let configStore: ConfigStore | undefined = undefined;
