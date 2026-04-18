@@ -78,7 +78,7 @@ export const POIs: Array<POI> = [
     },
     {
         title: "Sleeping Library",
-        imageName: "sleeping-library.jpg",
+        imageName: "sleeping-library2.jpg",
         audioName: "sleeping-library.m4a",
         id: "library",
         location: {
@@ -133,7 +133,7 @@ export const POIs: Array<POI> = [
     {
         title: "Recording Studio",
         id: "recording-studio",
-        imageName: "recording-studio.jpg",
+        imageName: "recording-studio2.jpg",
         audioName: "recording-studio.m4a",
         location: {
             latitude: 34.181888,
