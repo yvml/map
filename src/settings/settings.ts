@@ -51,18 +51,11 @@ export class SettingsMenu {
                 textContainer.className = "settings-feature-flag-text-flex";
 
                 // bold(FF Name)
-                // regular(FF description)
                 const nameElement = document.createElement("strong");
                 nameElement.textContent = feature.name;
                 textContainer.className = "settings-feature-flag-title-text";
 
-                const descriptionElement = document.createElement("span");
-                descriptionElement.textContent = feature.description;
-                textContainer.className =
-                    "settings-feature-flag-description-text";
-
                 textContainer.appendChild(nameElement);
-                textContainer.appendChild(descriptionElement);
 
                 row.appendChild(checkbox);
                 row.appendChild(textContainer);
